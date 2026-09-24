@@ -746,6 +746,32 @@ class Catalog
         return $products;
     }
 
+    /** Category metadata by slug, or null when the slug is not ours. */
+    public static function category(string $slug): ?array
+    {
+        foreach (self::categories() as $category) {
+            if ($category['href'] === '/categorie/'.$slug) {
+                return $category + ['slug' => $slug];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Products held for a category.
+     *
+     * Only phones are populated today: the 19 graded iPhones are the
+     * whole of what we hold. The other categories are declared with
+     * their real live counts but carry no products until the catalog
+     * migration runs, so they render an honest empty state rather than
+     * a 404. See PRODUCT.md.
+     */
+    public static function productsInCategory(string $slug): array
+    {
+        return $slug === 'telefoane' ? self::products() : [];
+    }
+
     /** One product by slug, or null when nothing matches. */
     public static function find(string $slug): ?array
     {

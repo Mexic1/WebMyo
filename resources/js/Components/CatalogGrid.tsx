@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useFlip } from '@/Hooks/useFlip';
 import Arrow from '@/Components/Arrow';
 
 export type Unit = {
@@ -31,41 +31,9 @@ export default function CatalogGrid({
     active: string | null;
     onSelect: (grade: string | null) => void;
 }) {
-    const cells = useRef(new Map<string, HTMLAnchorElement>());
-    const before = useRef(new Map<string, DOMRect>());
-
     const shown = active ? units.filter((u) => u.grade === active) : units;
     const select = (grade: string | null) => onSelect(grade);
-
-    // The snapshot is taken at the END of each layout effect, so the map
-    // still holds pre-change geometry when the next change lands. That
-    // keeps the travel working no matter which control triggered it —
-    // the grid's own filter bar or the rail's condition ladder.
-    useLayoutEffect(() => {
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        if (!reduce && before.current.size > 0) {
-            cells.current.forEach((el, key) => {
-                const prev = before.current.get(key);
-                if (!prev) return;
-
-                const next = el.getBoundingClientRect();
-                const dx = prev.left - next.left;
-                const dy = prev.top - next.top;
-
-                if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
-
-                el.animate(
-                    [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'translate(0, 0)' }],
-                    { duration: 420, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
-                );
-            });
-        }
-
-        const snapshot = new Map<string, DOMRect>();
-        cells.current.forEach((el, key) => snapshot.set(key, el.getBoundingClientRect()));
-        before.current = snapshot;
-    }, [active]);
+    const register = useFlip(active);
 
     return (
         <>
@@ -109,10 +77,7 @@ export default function CatalogGrid({
                         className="unit"
                         key={u.href}
                         href={u.href}
-                        ref={(el) => {
-                            if (el) cells.current.set(u.href, el);
-                            else cells.current.delete(u.href);
-                        }}
+                        ref={register(u.href)}
                     >
                         {u.image ? (
                             <span className="unit-photo">
