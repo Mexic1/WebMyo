@@ -1,3 +1,11 @@
+import { Facebook, Instagram, TikTok } from '@/Components/SocialIcons';
+
+const SOCIALS = [
+    { label: 'Facebook', href: 'https://www.facebook.com/myomobile.ro/', Icon: Facebook },
+    { label: 'Instagram', href: 'https://www.instagram.com/myomobile.ro/', Icon: Instagram },
+    { label: 'TikTok', href: 'https://www.tiktok.com/@myomobile.ro', Icon: TikTok },
+];
+
 export type Company = {
     legalName: string;
     cui: string;
@@ -34,6 +42,23 @@ export default function SiteFooter({
                 <p style={{ margin: '0.75rem 0 0' }}>
                     <a href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a>
                 </p>
+
+                <ul className="socials" aria-label="Rețele sociale">
+                    {SOCIALS.map(({ label, href, Icon }) => (
+                        <li key={label}>
+                            <a
+                                className="btn btn-icon"
+                                href={href}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                                aria-label={label}
+                                title={label}
+                            >
+                                <Icon />
+                            </a>
+                        </li>
+                    ))}
+                </ul>
             </div>
 
             <div className="cell span-3">

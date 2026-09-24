@@ -80,6 +80,16 @@ Any data migration must therefore be treated as importing from an untrusted sour
 
 **The current site has no contact page.** Verified: `/contact/`, `/contacte/`, `/despre-noi/`, `/magazine/`, `/locatii/`, `/help/contact/` and `/pagina-contact/` all return 404. The footer carries no address, no email and no opening hours. This is the single largest content gap and makes `LocalBusiness` structured data impossible today.
 
+**Three different phone numbers are in circulation**, and the client must say which is correct:
+
+| Number | Where it appears |
+|---|---|
+| `0720 512 157` | Site header and footer |
+| `0758 808 911` | Privacy policy, as the data-protection contact line |
+| `0787 333 144` | Buziaș store directory listing |
+
+**Two different email addresses**, both only inside the privacy policy: `contact@myomobile.ro` (sections 1, 6.1, 6.2) and `office@myomobile.ro` (section 9). The rebuild uses `contact@myomobile.ro` and `0758 808 911` on the privacy page because that is what the policy states, but this needs confirming before launch — a GDPR contact address that bounces is a compliance problem, not a typo.
+
 **Performance is a product constraint, not a preference.** The current homepage ships 276 KB of HTML, 98 script tags (91 external), 84 stylesheets and references 172 unique images (a 40-image sample measured 587 KB, extrapolating to roughly 2.5 MB). The rebuild targets a mobile commerce funnel, so the pinned WebGL direction must be budgeted rather than assumed free.
 
 ## Brand Commitments
@@ -114,7 +124,7 @@ Absent or unverified — **must not be fabricated**:
 
 - **Store addresses and count are unconfirmed.** Only Buziaș (Str. Principală 31) is corroborated by an external directory. Facebook pages indicate Moșnița Nouă and Timișoara. A fourth location in Arad was claimed in an earlier research pass but could not be verified. The real list must come from the client.
 - **No opening hours anywhere**, for any location.
-- **No contact email** published anywhere on the site.
+- **Contact details exist, but only buried in the privacy policy** — corrected 2026-09-24. An earlier entry here claimed no email was published anywhere; that was wrong. `/help/politica-de-confidentialitate` gives `contact@myomobile.ro` (three times) and `office@myomobile.ro` (section 9), plus phone `0758 808 911`. None of this appears in the header, the footer, or any page a customer would look at.
 - Trust claims on the current homepage — "96% din clienții noștri sunt mulțumiți" (verified present in markup) and a Trustindex review rating (claimed in earlier research, not verified by me) — are unsubstantiated from outside. Their provenance must be confirmed before reuse, since the primary audience is cold buyers and a false proof claim is worse than none.
 - No staff photos, store photos, or testimonials with attribution.
 
@@ -140,7 +150,8 @@ Recorded rather than invented:
 - The condition grade vocabulary (the four observed values are not confirmed as the intended set).
 - Whether Poppins is retained.
 - Whether the service/RMA and returns pages are reproduced as static content.
-- Store list, addresses, opening hours and contact email — pending client.
+- Store list, addresses and opening hours — pending client.
+- Which phone number and which email address are canonical (three numbers and two addresses are currently published across their properties).
 - Whether existing trust claims can be substantiated.
 - Internal staff workflows for the admin.
 - **The graded/ungraded catalog gap.** Only 19 of 446 products carry a condition grade (all iPhones), while the Telefoane category alone holds 145. The homepage currently shows a 145-product category tile above a 19-unit graded grid, which reads as truncated. Deferred deliberately (2026-09-24): the fix is grading the rest of the catalog during the WordPress migration, not a label on the homepage. Revisit when real grading data exists.
