@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-24T12:00:00Z",
+  "title": "Design System: MYO",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#F5F5F5",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(26% 0 0)", "oklch(37% 0 0)", "oklch(48% 0 0)", "oklch(60% 0 0)", "oklch(72% 0 0)", "oklch(84% 0 0)", "oklch(96% 0 0)"]
+      },
+      "paper-deep": {
+        "role": "neutral",
+        "displayName": "Paper Deep",
+        "canonical": "#E9E9E7",
+        "tonalRamp": ["oklch(15% 0.003 100)", "oklch(26% 0.003 100)", "oklch(37% 0.003 100)", "oklch(48% 0.003 100)", "oklch(60% 0.003 100)", "oklch(72% 0.003 100)", "oklch(84% 0.003 100)", "oklch(95% 0.003 100)"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Navy Ink",
+        "canonical": "#141E30",
+        "tonalRamp": ["oklch(15% 0.04 260)", "oklch(24% 0.05 260)", "oklch(35% 0.05 260)", "oklch(46% 0.05 260)", "oklch(58% 0.045 260)", "oklch(70% 0.035 260)", "oklch(83% 0.02 260)", "oklch(95% 0.01 260)"]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Ink Soft",
+        "canonical": "#1B263B",
+        "tonalRamp": ["oklch(15% 0.04 262)", "oklch(26% 0.05 262)", "oklch(37% 0.05 262)", "oklch(48% 0.05 262)", "oklch(60% 0.045 262)", "oklch(72% 0.035 262)", "oklch(84% 0.02 262)", "oklch(95% 0.01 262)"]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "#5B6577",
+        "tonalRamp": ["oklch(15% 0.02 258)", "oklch(26% 0.025 258)", "oklch(37% 0.028 258)", "oklch(48% 0.03 258)", "oklch(60% 0.028 258)", "oklch(72% 0.022 258)", "oklch(84% 0.015 258)", "oklch(95% 0.008 258)"]
+      },
+      "signal": {
+        "role": "primary",
+        "displayName": "Signal Violet",
+        "canonical": "#9B5DE5",
+        "tonalRamp": ["oklch(15% 0.09 300)", "oklch(26% 0.14 300)", "oklch(37% 0.19 300)", "oklch(48% 0.22 300)", "oklch(60% 0.22 300)", "oklch(72% 0.17 300)", "oklch(84% 0.10 300)", "oklch(95% 0.04 300)"]
+      },
+      "signal-deep": {
+        "role": "primary",
+        "displayName": "Signal Deep",
+        "canonical": "#6D28D9",
+        "tonalRamp": ["oklch(15% 0.10 295)", "oklch(26% 0.16 295)", "oklch(37% 0.21 295)", "oklch(45% 0.25 295)", "oklch(58% 0.24 295)", "oklch(70% 0.18 295)", "oklch(83% 0.11 295)", "oklch(95% 0.04 295)"]
+      },
+      "axis": {
+        "role": "secondary",
+        "displayName": "Axis Cyan",
+        "canonical": "#00BBF9",
+        "tonalRamp": ["oklch(15% 0.05 230)", "oklch(26% 0.08 230)", "oklch(37% 0.11 230)", "oklch(48% 0.14 230)", "oklch(60% 0.16 230)", "oklch(72% 0.15 230)", "oklch(84% 0.10 230)", "oklch(95% 0.04 230)"]
+      },
+      "finance": {
+        "role": "tertiary",
+        "displayName": "Financing Amber",
+        "canonical": "#F6BB06",
+        "tonalRamp": ["oklch(15% 0.04 85)", "oklch(26% 0.07 85)", "oklch(37% 0.10 85)", "oklch(48% 0.13 85)", "oklch(60% 0.15 85)", "oklch(72% 0.16 85)", "oklch(84% 0.15 85)", "oklch(95% 0.07 85)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "One per surface. Ceiling derived from the longest line against the five-column measure; leading 1.0 clears the comma-below on Ț/Ș." },
+      "count": { "displayName": "Count", "purpose": "The category figure, pushed to the top of its cell. The number is the content; the name beneath it is the caption." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles and the featured unit name." },
+      "measurement": { "displayName": "Measurement", "purpose": "Headline prices and the catalog readout. Tabular figures, tracking zeroed." },
+      "measurement-compact": { "displayName": "Measurement Compact", "purpose": "The price inside a catalog unit cell, where four cells share a row." },
+      "subhead": { "displayName": "Subhead", "purpose": "The supporting line under a display headline or inside a band, capped at 68ch, set in ink-soft." },
+      "title": { "displayName": "Title", "purpose": "The unit name inside a catalog cell." },
+      "body": { "displayName": "Body", "purpose": "Running text in cells and the footer." },
+      "note": { "displayName": "Note", "purpose": "Secondary running prose: qualifiers, step references, lending disclaimers. Sentence case, never tracked, never uppercase. Prose never uses label type." },
+      "label": { "displayName": "Label", "purpose": "Field names, nav items, grade names, financing tag. 0.75rem is the floor, raised from 0.6875rem after a legibility finding. Never a sentence, never a kicker above a heading." }
+    },
+    "fonts": [
+      { "family": "Archivo", "weights": [400, 500, 600, 700, 800], "provider": "bunny (self-hosted via laravel-vite-plugin/fonts)", "subsets": ["latin", "latin-ext"], "note": "latin-ext is mandatory: it carries ă Ă ș Ș ț Ț. Without it Romanian diacritics fall back to a system face mid-word." }
+    ],
+    "shadows": [],
+    "materials": [
+      { "name": "paper", "value": "#F5F5F5", "purpose": "The ground of every surface." },
+      { "name": "ink-field", "value": "background: #141E30; contents flip to paper", "purpose": "The only figure/ground shift. Bleeds to cell edges by negative gutter margins. The mechanism that makes cyan legible." },
+      { "name": "screen-50", "value": "radial-gradient(#141E30 1.1px, transparent 1.2px) / 5px 5px", "purpose": "Densest offset screen: the most visible wear on a grade plate." },
+      { "name": "screen-20", "value": "radial-gradient(#141E30 1.1px, transparent 1.2px) / 9px 9px", "purpose": "Middle offset screen: minimal wear." },
+      { "name": "screen-05", "value": "radial-gradient(#141E30 1.1px, transparent 1.2px) / 16px 16px", "purpose": "Lightest offset screen: no visible wear. Density is semantic, not texture." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The only easing in the system. Every state transition and the grid travel use it." },
+      { "name": "duration-control", "value": "180ms", "purpose": "Button background and colour inversion on hover." },
+      { "name": "duration-link", "value": "160ms", "purpose": "Nav item colour shift and filter button fill." },
+      { "name": "duration-row", "value": "200ms", "purpose": "Index row, catalog unit and category cell background fill on hover; grade fill opacity." },
+      { "name": "duration-arrow", "value": "260ms", "purpose": "Row and cell arrow translate of 0.25rem." },
+      { "name": "duration-travel", "value": "420ms", "purpose": "The catalog grid's FLIP travel, run through the Web Animations API against a geometry snapshot taken at the end of each layout effect. Surviving cells translate from their old offset to zero; they never crossfade. Cells moving under 1px are skipped, and prefers-reduced-motion skips the travel entirely. Also declared on the condition-axis fill transform, which is static per row and does not animate." },
+      { "name": "reduced-motion", "value": "all CSS transitions and animations collapsed to 0.01ms; scripted travel gated on the same query", "purpose": "Global prefers-reduced-motion honour, required by PRODUCT.md." }
+    ],
+    "breakpoints": [
+      { "name": "collapse", "value": "1100px" },
+      { "name": "units-single", "value": "560px" }
+    ],
+    "rules-primitives": [
+      { "name": "rule", "value": "1px solid color-mix(in srgb, #141E30 22%, transparent)", "purpose": "Every ordinary boundary: cell dividers, row separators, band edges, catalog cell edges." },
+      { "name": "rule-strong", "value": "1px solid #141E30", "purpose": "Terminal edge of a major region, the secondary button border, the filter bar frame and its internal divisions, the trust field's opening rule." },
+      { "name": "gutter", "value": "clamp(1rem, 2.5vw, 2.5rem)", "purpose": "Cell padding and the negative margin that bleeds inverted fields to the cell edge." },
+      { "name": "spans", "value": ".span-2 / .span-3 / .span-4 / .span-6 / .span-8 / .span-12", "purpose": "Placement on the shared twelve-column module. All collapse to span 12 below 1100px." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one forward action on a surface: solid Signal Deep with the poster tick bar at its right edge.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\">Vezi catalogul<span class=\"ds-btn-tick\" aria-hidden=\"true\"></span></a>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: space-between; gap: 2.5rem; padding: 0.9rem 1rem 0.9rem 1.25rem; border: 1px solid #141E30; border-radius: 0; background: transparent; color: #141E30; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: background 180ms cubic-bezier(0.16,1,0.3,1), color 180ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-primary { border-color: #6D28D9; background: #6D28D9; color: #F5F5F5; } .ds-btn-primary:hover { background: #141E30; border-color: #141E30; color: #F5F5F5; } .ds-btn-primary:focus-visible { outline: 2px solid #6D28D9; outline-offset: 2px; } .ds-btn-tick { width: 0.5rem; height: 1.1rem; background: currentColor; flex: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "The bordered alternative action, carrying the arrow instead of the tick bar. Inverts to ink on hover.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">Cum notăm aparatele<svg width=\"18\" height=\"10\" viewBox=\"0 0 18 10\" fill=\"none\" aria-hidden=\"true\"><path d=\"M0 5h16\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M12.5 1 17 5l-4.5 4\" stroke=\"currentColor\" stroke-width=\"1.5\" fill=\"none\"/></svg></a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: space-between; gap: 2.5rem; padding: 0.9rem 1rem 0.9rem 1.25rem; border: 1px solid #141E30; border-radius: 0; background: transparent; color: #141E30; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: background 180ms cubic-bezier(0.16,1,0.3,1), color 180ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-secondary:hover { background: #141E30; color: #F5F5F5; } .ds-btn-secondary:focus-visible { outline: 2px solid #6D28D9; outline-offset: 2px; } .ds-btn-secondary[aria-disabled=\"true\"] { border-color: #5B6577; color: #5B6577; cursor: not-allowed; background: transparent; }"
+    },
+    {
+      "name": "Filter Bar",
+      "kind": "chip",
+      "refersTo": "filter",
+      "description": "One strong-ruled rectangle divided into options, sized to its content. The selected option fills Signal Deep; re-pressing it clears the filter.",
+      "html": "<div class=\"ds-filter-bar\" role=\"group\" aria-label=\"Filtrează după notă de stare\"><button type=\"button\" class=\"ds-filter\" aria-pressed=\"true\">Toate</button><button type=\"button\" class=\"ds-filter\" aria-pressed=\"false\">Bun</button><button type=\"button\" class=\"ds-filter\" aria-pressed=\"false\">Excelent</button><button type=\"button\" class=\"ds-filter\" aria-pressed=\"false\">Ca nou</button></div>",
+      "css": ".ds-filter-bar { display: flex; flex-wrap: wrap; gap: 0; width: fit-content; border: 1px solid #141E30; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-filter { padding: 0.7rem 1.1rem; border: 0; border-right: 1px solid #141E30; border-radius: 0; background: transparent; color: #141E30; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 160ms cubic-bezier(0.16,1,0.3,1), color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-filter:last-child { border-right: 0; } .ds-filter:hover { background: #E9E9E7; } .ds-filter[aria-pressed=\"true\"] { background: #6D28D9; color: #F5F5F5; } .ds-filter:focus-visible { outline: 2px solid #6D28D9; outline-offset: 2px; }"
+    },
+    {
+      "name": "Condition Axis",
+      "kind": "custom",
+      "refersTo": "axis-field",
+      "description": "The inverted ink field where cyan bars state each grade's position on the three-step condition ladder. The fill scale is static per row; the motion belongs to the grid the axis drives.",
+      "html": "<div class=\"ds-axis\"><p class=\"ds-axis-label\">Scara de stare</p><div role=\"group\" aria-label=\"Filtrează după starea aparatului\"><button type=\"button\" class=\"ds-grade\" aria-pressed=\"false\"><span class=\"ds-grade-track\"><span class=\"ds-grade-fill\" style=\"transform:scaleX(0.3333)\"></span></span><span class=\"ds-grade-name\">Bun</span></button><button type=\"button\" class=\"ds-grade\" aria-pressed=\"true\"><span class=\"ds-grade-track\"><span class=\"ds-grade-fill\" style=\"transform:scaleX(0.6667)\"></span></span><span class=\"ds-grade-name\">Excelent</span></button><button type=\"button\" class=\"ds-grade\" aria-pressed=\"false\"><span class=\"ds-grade-track\"><span class=\"ds-grade-fill\" style=\"transform:scaleX(1)\"></span></span><span class=\"ds-grade-name\">Ca nou</span></button></div><p class=\"ds-axis-note\">Treapta pe scară, nu stocul. 1 — urme vizibile, 3 — ca nou.</p></div>",
+      "css": ".ds-axis { padding: 1rem clamp(1rem,2.5vw,2.5rem) 1.25rem; background: #141E30; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-axis-label { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, #F5F5F5 62%, transparent); } .ds-grade { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.75rem; width: 100%; padding: 0.55rem 0; border: 0; border-bottom: 1px solid color-mix(in srgb, #F5F5F5 18%, transparent); background: transparent; text-align: left; cursor: pointer; } .ds-grade-track { display: block; height: 0.5rem; background: color-mix(in srgb, #F5F5F5 16%, transparent); } .ds-grade-fill { display: block; height: 100%; background: #00BBF9; transform-origin: left center; opacity: 0.8; transition: transform 420ms cubic-bezier(0.16,1,0.3,1), opacity 200ms cubic-bezier(0.16,1,0.3,1); } .ds-grade-name { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, #F5F5F5 78%, transparent); } .ds-grade:hover .ds-grade-fill, .ds-grade:focus-visible .ds-grade-fill, .ds-grade[aria-pressed=\"true\"] .ds-grade-fill { opacity: 1; } .ds-grade[aria-pressed=\"true\"] .ds-grade-name { color: #00BBF9; } .ds-grade:focus-visible { outline: 2px solid #00BBF9; outline-offset: 2px; } .ds-axis-note { margin: 0.75rem 0 0; font-size: 0.875rem; line-height: 1.5; color: color-mix(in srgb, #F5F5F5 72%, transparent); }"
+    },
+    {
+      "name": "Catalog Unit Cell",
+      "kind": "card",
+      "refersTo": "unit-cell",
+      "description": "A graded unit as a ruled square: cyan-on-ink grade chip, name, storage, compact tabular price, arrow line. These are the cells that travel when the grid re-sorts.",
+      "html": "<div class=\"ds-units\"><a class=\"ds-unit\" href=\"#\"><span class=\"ds-unit-grade\">Excelent</span><span class=\"ds-unit-name\">Apple iPhone 16 Pro Max</span><span class=\"ds-unit-label\">256 GB</span><span class=\"ds-unit-price\">3.700 lei</span><span class=\"ds-unit-go\">Vezi unitatea<svg width=\"18\" height=\"10\" viewBox=\"0 0 18 10\" fill=\"none\" aria-hidden=\"true\"><path d=\"M0 5h16\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M12.5 1 17 5l-4.5 4\" stroke=\"currentColor\" stroke-width=\"1.5\" fill=\"none\"/></svg></span></a><a class=\"ds-unit\" href=\"#\"><span class=\"ds-unit-grade\">Ca nou</span><span class=\"ds-unit-name\">Apple iPhone 14 Pro Max</span><span class=\"ds-unit-label\">512 GB</span><span class=\"ds-unit-price\">2.999 lei</span><span class=\"ds-unit-go\">Vezi unitatea<svg width=\"18\" height=\"10\" viewBox=\"0 0 18 10\" fill=\"none\" aria-hidden=\"true\"><path d=\"M0 5h16\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M12.5 1 17 5l-4.5 4\" stroke=\"currentColor\" stroke-width=\"1.5\" fill=\"none\"/></svg></span></a></div>",
+      "css": ".ds-units { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid color-mix(in srgb, #141E30 22%, transparent); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-unit { display: flex; flex-direction: column; gap: 0.35rem; padding: clamp(1rem,2.5vw,2.5rem); border-right: 1px solid color-mix(in srgb, #141E30 22%, transparent); border-bottom: 1px solid color-mix(in srgb, #141E30 22%, transparent); color: #141E30; text-decoration: none; transition: background 200ms cubic-bezier(0.16,1,0.3,1); } .ds-unit:hover { background: #E9E9E7; } .ds-unit:focus-visible { outline: 2px solid #6D28D9; outline-offset: -2px; } .ds-unit-grade { display: inline-block; align-self: flex-start; padding: 0.2rem 0.45rem; background: #141E30; color: #00BBF9; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; } .ds-unit-name { font-size: 1.0625rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; } .ds-unit-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6577; } .ds-unit-price { margin-top: 0.35rem; font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; } .ds-unit-go { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6577; } .ds-unit-go svg { color: #6D28D9; transition: transform 260ms cubic-bezier(0.16,1,0.3,1); } .ds-unit:hover .ds-unit-go svg { transform: translateX(0.25rem); }"
+    },
+    {
+      "name": "Category Cell",
+      "kind": "nav",
+      "refersTo": "category-cell",
+      "description": "The count is the content: a 2.75rem tabular figure at the top of an 11rem cell, its name captioned in label type at the bottom.",
+      "html": "<a class=\"ds-cat\" href=\"#\"><span class=\"ds-cat-count\">145</span><span class=\"ds-cat-name\">Telefoane<svg width=\"18\" height=\"10\" viewBox=\"0 0 18 10\" fill=\"none\" aria-hidden=\"true\"><path d=\"M0 5h16\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M12.5 1 17 5l-4.5 4\" stroke=\"currentColor\" stroke-width=\"1.5\" fill=\"none\"/></svg></span></a>",
+      "css": ".ds-cat { display: flex; flex-direction: column; justify-content: space-between; min-height: 11rem; padding: clamp(1rem,2.5vw,2.5rem); border-right: 1px solid color-mix(in srgb, #141E30 22%, transparent); color: #141E30; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; text-decoration: none; transition: background 200ms cubic-bezier(0.16,1,0.3,1); } .ds-cat:hover { background: #E9E9E7; } .ds-cat:focus-visible { outline: 2px solid #6D28D9; outline-offset: -2px; } .ds-cat-count { font-size: 2.75rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; } .ds-cat-name { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1.25rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; } .ds-cat-name svg { color: #6D28D9; transition: transform 260ms cubic-bezier(0.16,1,0.3,1); } .ds-cat:hover .ds-cat-name svg { transform: translateX(0.25rem); }"
+    },
+    {
+      "name": "Grade Plate",
+      "kind": "custom",
+      "refersTo": "grade-plate",
+      "description": "The offset screen as illustration: a 4.5rem hairline rectangle whose dot density states how visible the wear is. Three densities, semantic, never decorative.",
+      "html": "<div class=\"ds-plates\"><div><div class=\"ds-plate ds-screen ds-screen-50\"></div><h3 class=\"ds-plate-title\">Bun</h3><p class=\"ds-plate-note\">Treapta 1 din 3 pe scara de stare.</p></div><div><div class=\"ds-plate ds-screen ds-screen-20\"></div><h3 class=\"ds-plate-title\">Excelent</h3><p class=\"ds-plate-note\">Treapta 2 din 3 pe scara de stare.</p></div><div><div class=\"ds-plate ds-screen ds-screen-05\"></div><h3 class=\"ds-plate-title\">Ca nou</h3><p class=\"ds-plate-note\">Treapta 3 din 3 pe scara de stare.</p></div></div>",
+      "css": ".ds-plates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem,2.5vw,2.5rem); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; color: #141E30; } .ds-plate { height: 4.5rem; margin-bottom: 1rem; border: 1px solid color-mix(in srgb, #141E30 22%, transparent); } .ds-screen { background-image: radial-gradient(#141E30 1.1px, transparent 1.2px); background-position: 0 0; } .ds-screen-50 { background-size: 5px 5px; } .ds-screen-20 { background-size: 9px 9px; } .ds-screen-05 { background-size: 16px 16px; } .ds-plate-title { margin: 0; font-size: 2.25rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; } .ds-plate-note { margin: 0.5rem 0 0; font-size: 0.875rem; line-height: 1.55; color: #5B6577; }"
+    },
+    {
+      "name": "Index Row",
+      "kind": "nav",
+      "refersTo": "index-row",
+      "description": "A catalog unit as a dated record: name and grade, tabular price, arrow affordance. Hairline separated, fills paper-deep on hover.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span>Apple iPhone 14 Pro Max<span class=\"ds-row-grade\">Excelent</span></span><span class=\"ds-row-price\">3.050 lei</span><svg class=\"ds-row-arrow\" width=\"18\" height=\"10\" viewBox=\"0 0 18 10\" fill=\"none\" aria-hidden=\"true\"><path d=\"M0 5h16\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M12.5 1 17 5l-4.5 4\" stroke=\"currentColor\" stroke-width=\"1.5\" fill=\"none\"/></svg></a>",
+      "css": ".ds-row { display: grid; grid-template-columns: 1fr auto auto; align-items: baseline; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid color-mix(in srgb, #141E30 22%, transparent); color: #141E30; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 1rem; line-height: 1.6; text-decoration: none; transition: background 200ms cubic-bezier(0.16,1,0.3,1); } .ds-row:hover { background: #E9E9E7; } .ds-row:focus-visible { outline: 2px solid #6D28D9; outline-offset: 2px; } .ds-row-grade { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6577; } .ds-row-price { font-variant-numeric: tabular-nums; letter-spacing: 0; } .ds-row-arrow { color: #6D28D9; transition: transform 260ms cubic-bezier(0.16,1,0.3,1); } .ds-row:hover .ds-row-arrow { transform: translateX(0.25rem); }"
+    },
+    {
+      "name": "Trust Field",
+      "kind": "custom",
+      "refersTo": "trust-line",
+      "description": "Terms stated as a ledger, not as badges: a strong rule opens it, each line is a hairline-separated label/value pair with the value in 700 weight.",
+      "html": "<div class=\"ds-trust\"><div class=\"ds-trust-line\"><span>Retur</span><span class=\"ds-trust-value ds-tabular\">14 zile</span></div><div class=\"ds-trust-line\"><span>Garanție</span><span class=\"ds-trust-value ds-tabular\">12 luni</span></div><div class=\"ds-trust-line\"><span>Plată în rate</span><span class=\"ds-trust-value\">LeanPay · TBI Credit</span></div></div>",
+      "css": ".ds-trust { margin-top: 2.5rem; border-top: 1px solid #141E30; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; color: #141E30; font-size: 1rem; line-height: 1.6; } .ds-trust-line { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid color-mix(in srgb, #141E30 22%, transparent); } .ds-trust-value { font-weight: 700; } .ds-tabular { font-variant-numeric: tabular-nums; letter-spacing: 0; }"
+    },
+    {
+      "name": "Nav Rail Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Category list in the rail: flush-left uppercase labels, violet-deep on hover and for the current page. No underline, no background.",
+      "html": "<ul class=\"ds-nav\"><li><a href=\"#\">Telefoane</a></li><li><a href=\"#\" aria-current=\"page\">Laptopuri</a></li><li><a href=\"#\">Tablete</a></li></ul>",
+      "css": ".ds-nav { list-style: none; margin: 0; padding: 0; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-nav a { display: block; padding: 0.4rem 0; color: #141E30; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; transition: color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-nav a:hover, .ds-nav a[aria-current=\"page\"] { color: #6D28D9; } .ds-nav a:focus-visible { outline: 2px solid #6D28D9; outline-offset: 2px; }"
+    },
+    {
+      "name": "Financing Surfaces",
+      "kind": "chip",
+      "refersTo": "finance-block",
+      "description": "The only two ambers in the system: the inline tag beside a price, and the whole amber cell that opens the instalment band. Always a fill with ink on top.",
+      "html": "<p class=\"ds-finance-tag\">Rate prin LeanPay și TBI</p><div class=\"ds-finance-block\"><p class=\"ds-finance-label\">Plată în rate</p><p class=\"ds-finance-title\">LeanPay și TBI Credit</p></div>",
+      "css": ".ds-finance-tag { display: inline-block; margin: 0.75rem 0 1.5rem; padding: 0.35rem 0.6rem; background: #F6BB06; color: #141E30; border-radius: 0; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; } .ds-finance-block { display: flex; flex-direction: column; justify-content: center; padding: clamp(1rem,2.5vw,2.5rem); background: #F6BB06; color: #141E30; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-finance-label { margin: 0; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, #141E30 70%, transparent); } .ds-finance-title { margin: 0.5rem 0 0; font-size: 2.25rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }"
+    },
+    {
+      "name": "Module Cell",
+      "kind": "card",
+      "refersTo": "cell",
+      "description": "The system's container: not a card. A twelve-column grid cell with fluid gutter padding and a hairline right rule that drops on the last cell.",
+      "html": "<div class=\"ds-module\"><div class=\"ds-cell\"><p class=\"ds-cell-label\">Catalog</p><p class=\"ds-cell-figure\">446 <span class=\"ds-cell-label\">produse</span></p></div><div class=\"ds-cell\"><p class=\"ds-cell-label\">Cumpărare</p><p class=\"ds-cell-body\">Retur în 14 de zile.<br>Garanție 12 de luni.</p></div></div>",
+      "css": ".ds-module { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; background: #F5F5F5; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; border-top: 1px solid color-mix(in srgb, #141E30 22%, transparent); } .ds-cell { padding: clamp(1rem,2.5vw,2.5rem); border-right: 1px solid color-mix(in srgb, #141E30 22%, transparent); color: #141E30; } .ds-cell:last-child { border-right: 0; } .ds-cell-label { margin: 0; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6577; } .ds-cell-figure { margin: 0.25rem 0 0; font-size: 2.25rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; } .ds-cell-body { margin: 0.5rem 0 0; font-size: 1rem; line-height: 1.6; }"
+    },
+    {
+      "name": "Grade Mark",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The world's only pictorial imagery: a violet quarter-arc beside a bar ladder filled in ink to the unit's grade. The ladder's length and the viewBox derive from the condition vocabulary — three steps — not from a literal.",
+      "html": "<svg class=\"ds-mark\" viewBox=\"0 0 282 220\" role=\"img\" aria-label=\"Marcaj geometric, treapta 2 din 3 pe scara de stare\"><path d=\"M0 220V0h120a120 120 0 0 1-120 220Z\" fill=\"#9B5DE5\"/><rect x=\"150\" y=\"0\" width=\"26\" height=\"220\" fill=\"#141E30\"/><rect x=\"194\" y=\"0\" width=\"26\" height=\"220\" fill=\"#141E30\"/><rect x=\"238\" y=\"0\" width=\"26\" height=\"220\" fill=\"#E9E9E7\"/></svg>",
+      "css": ".ds-mark { display: block; width: 100%; height: auto; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Concert-Poster Wall",
+    "overview": "MYO is built as a Swiss International Style poster pasted flat on paper. One twelve-column module disciplines every surface; hairline navy rules, not boxes or shadows, build every boundary. Hierarchy comes from scale contrast and from where a thing sits on the grid, never from decoration. The surface is meant to read as an instrument: a seller who thinks in systems, grading hardware as measured records rather than selling it with badges.\n\nThe palette is a paper ground with navy ink and one violet signal that owns whole modules instead of scattering as accents. Two colours are held under strict conditions: cyan belongs only inside an inverted ink field and only to express condition; amber belongs only to financing, and only as a fill. Imagery is authored geometry — a quarter-arc, a bar ladder and dot screens drawn in brand colour — because the world is flat matte paper. Confirmed rejections, made when liquid-glass-js was dropped from the stack: no blur, no translucency, no specular glass, no soft gradient wash, no drop shadow, no rounded card.\n\nDensity is high and deliberately unpadded: cells are separated by rules rather than by whitespace, and type sizes are few and far apart. The system moves in one way only — the grid re-sorts and its cells travel to their new positions. Nothing crossfades, nothing lifts. Romanian is the primary market, so diacritics are a typographic constraint of the system, not a localisation afterthought.",
+    "keyCharacteristics": [
+      "One twelve-column module, reused on every page including the 404",
+      "Hairline rules as the only boundary device; zero shadows, zero radii",
+      "Paper-white ground, navy ink, a single violet signal",
+      "Three materials only: paper, inverted ink field, offset dot screen",
+      "Two conditional colours (cyan for condition, amber for financing) under hard placement rules",
+      "Authored geometry as the only imagery; the geometry derives its length from the data",
+      "Motion is travel on the grid, never a fade",
+      "Browser chrome themed: selection, caret, scrollbar, focus ring, underline offset"
+    ],
+    "rules": [
+      { "name": "The Contrast-Step Rule", "body": "Violet has two steps and they are not interchangeable. #9B5DE5 may be display type, a fill or a rule; the moment violet carries reading text, a link or an icon, it becomes #6D28D9. Audit test: no text under 2.25rem is ever #9B5DE5.", "section": "colors" },
+      { "name": "The Cyan-Never-On-Paper Rule", "body": "Cyan appears only inside an ink field, and only to express condition or the wordmark. Three placements are sanctioned: mark field, condition ladder, unit grade chip. A fourth is added only by adding a fourth ink field — cyan on paper is a contrast failure (2:1), not a style choice.", "section": "colors" },
+      { "name": "The Amber-Is-Fill-Only Rule", "body": "Amber means financing and nothing else, and it is always a background with ink on top. Amber text does not exist in this system.", "section": "colors" },
+      { "name": "The Screen-Density Rule", "body": "The offset dot screen carries information, not texture. Three densities exist — 5px, 9px and 16px pitch — and the density is semantic: the heavier the screen, the more visible the wear it describes. A screen is never applied to make an empty area look designed, and no fourth density is invented without a fourth thing to mean.", "section": "colors" },
+      { "name": "The Twelve-Px Floor Rule", "body": "No text in this system is set below 0.75rem (12px). That is the floor for label type and it is a floor, not a target — it was raised from 0.6875rem after a legibility finding and must not be walked back for density.", "section": "typography" },
+      { "name": "The Label-Is-Not-Prose Rule", "body": "Tracked uppercase label type names a field in one or two words. Running prose never uses it. When prose must recede, it uses Note (0.875rem, sentence case, ink-muted). Audit test: no .label in the build contains a full sentence.", "section": "typography" },
+      { "name": "The No-Kicker Rule", "body": "No tracked uppercase label may sit as its own block directly above a heading. A kicker was shipped and removed; the replacement is not a smaller kicker. Sequence, category and context belong in running text, in the heading itself, or in a field/value pair where the value follows the label.", "section": "typography" },
+      { "name": "The Latin-Ext Rule", "body": "Archivo is self-hosted through the Bunny provider with subsets latin and latin-ext. This is a hard requirement, not an optimisation: without latin-ext, Romanian ă/ș/ț fall back to a system face mid-word. Any font added to this project ships both subsets or is not added.", "section": "typography" },
+      { "name": "The Longest-Line Rule", "body": "The display ceiling is set by the longest word measured against its five-column column, not by taste. The current 5rem cap is what \"INTELIGENT.\" (11 caps) allows; change the copy and the cap is re-derived, not guessed.", "section": "typography" },
+      { "name": "The Comma-Below Rule", "body": "Display leading is exactly 1.0 and must clear the descending comma on Ț and Ș against the next cap line. Any tighter leading collides with Romanian diacritics.", "section": "typography" },
+      { "name": "The Measurement Rule", "body": "Every price, capacity and count carries font-variant-numeric: tabular-nums with tracking zeroed. Figures are measurements and must not shimmer between rows.", "section": "typography" },
+      { "name": "The One Module Rule", "body": "Every surface — homepage, placeholder pages, the 404 — is laid on the same twelve-column module. A new region picks a span utility; it does not invent a layout. A nested grid is allowed only when its columns divide the parent span evenly.", "section": "layout" },
+      { "name": "The Hairline Rule", "body": "Boundaries are rules (1px ink at 22% for hairlines, solid ink for terminal edges), never borders used as decoration and never a box drawn around content for emphasis.", "section": "layout" },
+      { "name": "The Travel-Not-Fade Rule", "body": "When a control re-lays a grid, the surviving cells travel to their new positions — FLIP against a geometry snapshot, 420ms on cubic-bezier(0.16, 1, 0.3, 1) — so the module is visibly the instrument doing the sorting. Cells do not crossfade, do not stagger in, and are not remounted. Under prefers-reduced-motion: reduce the travel is skipped entirely and the new layout is simply there.", "section": "layout" },
+      { "name": "The Zero-Shadow Rule", "body": "box-shadow does not appear in this system. Not ambient, not on hover, not on focus, not as a hairline substitute. State is expressed by colour inversion, background fill and a 0.25rem translate, never by lift.", "section": "elevation" },
+      { "name": "The Inverted-Field Rule", "body": "When a component needs to stand apart from the paper, it becomes an ink field bleeding to its cell edges — not a card, not a tint, not a shadow.", "section": "elevation" },
+      { "name": "The Three-Materials Rule", "body": "Paper, ink field, offset screen. A new surface treatment is one of those three or it does not ship. There is no tint layer, no scrim, no frosted panel.", "section": "elevation" },
+      { "name": "The Square-Corner Rule", "body": "Radius is zero everywhere. A rounded card in this world reads as a foreign component, not a variant.", "section": "shapes" },
+      { "name": "The Authored-Geometry Rule", "body": "Imagery is geometry this project draws: arcs, bars, rules, ladders, screens. No stock photography furniture, no gradient mesh, no glass. Product photography, when the catalog needs it, enters as a squared, full-bleed plate inside a cell — never as a floating rounded thumbnail.", "section": "shapes" },
+      { "name": "The Vocabulary-Length Rule", "body": "Geometry that counts something takes the count as a parameter. The condition vocabulary is three steps — Bun, Excelent, Ca nou — and the mark, the ladder fill fractions and the axis note all derive from that length. Add or remove a grade and the drawing follows; no component carries a literal step count.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do lay every new surface on the twelve-column module with hairline-ruled cells, a span utility and the fluid clamp(1rem, 2.5vw, 2.5rem) gutter.",
+      "Do step violet down to signal-deep the moment it carries text, a link or an icon.",
+      "Do put cyan inside an ink field and nowhere else, and reserve it for condition and the wordmark.",
+      "Do keep label type at or above 0.75rem, in one or two words, naming a field.",
+      "Do use note (0.875rem, sentence case, ink-muted) whenever prose must recede.",
+      "Do ship every typeface with the latin-ext subset so Romanian diacritics render in the intended face.",
+      "Do set every price, capacity and count in tabular figures.",
+      "Do make a filtered grid travel: FLIP its surviving cells 420ms on cubic-bezier(0.16, 1, 0.3, 1), and skip the travel under prefers-reduced-motion.",
+      "Do hold one piece of selection state per concept and pass it to every control that expresses it, so two surfaces can never disagree.",
+      "Do derive counted geometry from the data — the condition vocabulary is three steps and the drawing follows it.",
+      "Do let dot-screen density mean something: heavier screen, more visible wear.",
+      "Do express state by inversion, fill and small translate: 160–420ms on cubic-bezier(0.16, 1, 0.3, 1).",
+      "Do keep the 1100px collapse to full-width bands, and add a narrower breakpoint only to step down a nested grid's column count."
+    ],
+    "donts": [
+      "Don't add a box-shadow anywhere, in any state, including as a fake hairline.",
+      "Don't round a corner; radius is 0 across the system.",
+      "Don't set body text, links or icons in signal violet, and never place cyan on paper.",
+      "Don't use amber as ink; it is a fill with ink on top or it is absent.",
+      "Don't introduce blur, translucency, specular glass or a soft gradient wash — they were rejected with the glass library when this world was chosen. The offset screen's radial-gradient is a hard-stopped dot grid, not a ramp, and is the only gradient function in the system.",
+      "Don't use a glyph icon font or an icon package; icons are inline SVG drawn in this vocabulary.",
+      "Don't set an uppercase label above a headline as a kicker or eyebrow. Labels name a field beside or beneath content, or pair with a value that follows them.",
+      "Don't set text below 0.75rem, and don't set a sentence in tracked uppercase.",
+      "Don't crossfade, stagger or remount a filtered list; the cells travel or nothing moves.",
+      "Don't let two controls for the same concept own separate state.",
+      "Don't apply a dot screen as decorative texture on an area that means nothing.",
+      "Don't wrap content in a card to group it; group it with a rule or an inverted field.",
+      "Don't centre a container or introduce a second grid; the module is full-bleed and singular."
+    ],
+    "openItems": [
+      "react-three-fiber is installed but unused; no WebGL ships.",
+      "Roughly 250px of dead paper remains under the hero statement column at desktop width.",
+      "The English locale is unbuilt; only Romanian ships.",
+      "A dark variant is not canonical and is undecided; no prefers-color-scheme block exists in the stylesheet."
+    ]
+  }
+}

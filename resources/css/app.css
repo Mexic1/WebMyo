@@ -1,0 +1,865 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../js/**/*.tsx';
+
+/* ------------------------------------------------------------------ *
+ * MYO design tokens
+ * Brand values carried over from the incumbent woodmart-child theme.
+ * Tonal steps (signal-deep, rule, ink-muted) are new: the incumbent
+ * declared no ramp and hardcoded greys inline.
+ * ------------------------------------------------------------------ */
+@theme {
+    --font-sans: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+
+    --color-paper: #f5f5f5;
+    --color-paper-deep: #e9e9e7;
+    --color-ink: #141e30;
+    --color-ink-soft: #1b263b;
+    --color-ink-muted: #5b6577;
+
+    /* Brand violet. 3.78:1 on paper — display, fills and rules only. */
+    --color-signal: #9b5de5;
+    /* Same hue, taken deep enough to carry text. 6.5:1 on paper. */
+    --color-signal-deep: #6d28d9;
+    /* Condition axis only. 2:1 on paper — never text, never on paper. */
+    --color-axis: #00bbf9;
+    /* Financing only. Always a fill with ink on top. */
+    --color-finance: #f6bb06;
+
+    --text-label: 0.75rem;
+    --text-body: 1rem;
+    --text-sub: 1.125rem;
+    --text-section: 2.25rem;
+}
+
+:root {
+    --rule: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
+    --rule-strong: 1px solid var(--color-ink);
+    --gutter: clamp(1rem, 2.5vw, 2.5rem);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------------------------------------------------------ *
+ * Base + browser surfaces
+ * ------------------------------------------------------------------ */
+html {
+    background: var(--color-paper);
+    scrollbar-color: var(--color-ink) var(--color-paper-deep);
+}
+
+body {
+    margin: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+::selection {
+    background: var(--color-signal-deep);
+    color: var(--color-paper);
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-signal-deep);
+    outline-offset: 2px;
+}
+
+a {
+    color: inherit;
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+}
+
+input,
+button,
+textarea,
+select {
+    font: inherit;
+    caret-color: var(--color-signal-deep);
+}
+
+/* Prices, capacities and counts are measurements: lock the figures. */
+.tabular {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+}
+
+/* ------------------------------------------------------------------ *
+ * The module — one grid disciplines every surface
+ * ------------------------------------------------------------------ */
+.module {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    width: 100%;
+}
+
+.module > * {
+    min-width: 0;
+}
+
+.cell {
+    padding: var(--gutter);
+    border-right: var(--rule);
+}
+
+.cell:last-child {
+    border-right: 0;
+}
+
+.rule-top {
+    border-top: var(--rule);
+}
+
+.rule-bottom {
+    border-bottom: var(--rule);
+}
+
+.rule-strong-bottom {
+    border-bottom: var(--rule-strong);
+}
+
+/* ------------------------------------------------------------------ *
+ * Type — hierarchy by scale contrast alone
+ * ------------------------------------------------------------------ */
+.label {
+    font-size: var(--text-label);
+    line-height: 1.45;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+}
+
+.display {
+    margin: 0;
+    /* Two ceilings, whichever binds first: the longest line
+       ("INTELIGENT.", 11 caps) against the five-column measure, and the
+       viewport height, since the hero shares one screen with the
+       category band. */
+    font-size: clamp(2.25rem, min(5.6vw, 8.5vh), 5rem);
+    /* Clears the comma-below on Ț/Ș against the next cap line. */
+    line-height: 1.0;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    overflow-wrap: break-word;
+}
+
+.section-title {
+    margin: 0;
+    font-size: var(--text-section);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.sub {
+    font-size: var(--text-sub);
+    line-height: 1.55;
+    max-width: 68ch;
+    color: var(--color-ink-soft);
+}
+
+/* ------------------------------------------------------------------ *
+ * Controls — rebuilt in the form's vocabulary, never stock
+ * ------------------------------------------------------------------ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.5rem;
+    padding: 0.9rem 1rem 0.9rem 1.25rem;
+    border: var(--rule-strong);
+    background: transparent;
+    color: var(--color-ink);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 180ms var(--ease-out-expo), color 180ms var(--ease-out-expo);
+}
+
+.btn:hover {
+    background: var(--color-ink);
+    color: var(--color-paper);
+}
+
+.btn-primary {
+    border-color: var(--color-signal-deep);
+    background: var(--color-signal-deep);
+    color: var(--color-paper);
+}
+
+.btn-primary:hover {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+}
+
+.btn:disabled,
+.btn[aria-disabled='true'] {
+    border-color: var(--color-ink-muted);
+    background: transparent;
+    color: var(--color-ink-muted);
+    cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------------ *
+ * Grade ladder — the condition axis, the one authored moment
+ * ------------------------------------------------------------------ */
+.axis-field {
+    padding: 1rem var(--gutter) 1.25rem;
+    margin: 0 calc(var(--gutter) * -1);
+    background: var(--color-ink);
+}
+
+.axis-field .label {
+    color: color-mix(in srgb, var(--color-paper) 62%, transparent);
+}
+
+.grade {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.55rem 0;
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-paper) 18%, transparent);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.grade-track {
+    display: block;
+    height: 0.5rem;
+    background: color-mix(in srgb, var(--color-paper) 16%, transparent);
+}
+
+.grade-fill {
+    display: block;
+    height: 100%;
+    background: var(--color-axis);
+    transform-origin: left center;
+    transition: transform 420ms var(--ease-out-expo), opacity 200ms var(--ease-out-expo);
+    opacity: 0.8;
+}
+
+.grade[aria-pressed='true'] .grade-fill,
+.grade:hover .grade-fill,
+.grade:focus-visible .grade-fill {
+    opacity: 1;
+}
+
+.grade-name {
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-paper) 78%, transparent);
+}
+
+.grade[aria-pressed='true'] .grade-name {
+    color: var(--color-axis);
+}
+
+.grade:focus-visible {
+    outline: 2px solid var(--color-axis);
+    outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Index rows — dated list, arrow affordance
+ * ------------------------------------------------------------------ */
+.row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: var(--rule);
+    text-decoration: none;
+    transition: background 200ms var(--ease-out-expo);
+}
+
+.row:hover {
+    background: var(--color-paper-deep);
+}
+
+.row-arrow {
+    color: var(--color-signal-deep);
+    transition: transform 260ms var(--ease-out-expo);
+}
+
+.row:hover .row-arrow {
+    transform: translateX(0.25rem);
+}
+
+.empty {
+    padding: 1.5rem 0;
+    border-bottom: var(--rule);
+    color: var(--color-ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ------------------------------------------------------------------ *
+ * Module placement — explicit rows so the rail can sit under the
+ * masthead on desktop while the statement leads on a phone.
+ * ------------------------------------------------------------------ */
+/* Row 1 is the masthead's own height; the spanning statement and
+   feature columns take row 2, so the rail starts flush under the mark.
+   The hero is exactly one screen: the three columns share that height
+   and distribute their own content into it rather than each running to
+   its natural length. */
+.hero {
+    grid-template-rows: auto 1fr;
+}
+
+/* The first screen is the hero plus the category index, together. The
+   category row takes its natural height; the hero takes the rest, so
+   neither leaves blank space and nothing needs scrolling to reach. */
+.screen-one {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 100vh;
+    min-height: 100svh;
+}
+
+/* Grid items refuse to shrink below their content unless told to. */
+.screen-one > * {
+    min-height: 0;
+}
+
+/* Past any real browser window, a viewport-height hero just stretches.
+   Let content set the height instead. */
+@media (min-height: 1400px) {
+    .screen-one {
+        min-height: 0;
+    }
+}
+
+/* Each column holds a head and a foot, so free height lands between
+   them rather than being shared out between a dozen children. One gap
+   per column keeps the two blocks apart on a short viewport; below
+   that the hero grows past 100vh rather than letting them collide. */
+.rail,
+.statement,
+.feature {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+/* The categories sit centred in the space between the mark field and
+   the condition axis, not pinned to the top of it. */
+.rail-head {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+}
+
+/* The statement reads as one centred block. */
+.statement {
+    justify-content: center;
+}
+
+/* The mark takes whatever height the column can spare, so it holds the
+   footprint a real portrait product photograph will need. */
+.feature-head {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.mark-box {
+    flex: 1;
+    min-height: 7rem;
+    position: relative;
+}
+
+/* The axis field is the rail's foot: it bleeds to the cell's edges. */
+.rail .axis-field {
+    margin-bottom: calc(var(--gutter) * -1);
+}
+
+@media (max-width: 1100px) {
+    .screen-one {
+        display: block;
+        min-height: 0;
+    }
+
+    .rail,
+    .statement,
+    .feature {
+        display: block;
+    }
+
+    .rail .axis-field {
+        margin-bottom: 0;
+    }
+
+    /* Block layout drops the column gap; restore it between blocks. */
+    .rail > * + *,
+    .statement > * + *,
+    .feature > * + * {
+        margin-top: 1.75rem;
+    }
+
+    /* Stacked, the mark has no column height to fill, so it carries its
+       own portrait proportion instead. */
+    .mark-box {
+        min-height: 0;
+        aspect-ratio: 347 / 420;
+        max-height: 62vh;
+    }
+}
+
+.masthead  { grid-column: 1 / 4;  grid-row: 1;     padding: 0; border-right: var(--rule); }
+.rail      { grid-column: 1 / 4;  grid-row: 2;     }
+.statement { grid-column: 4 / 9;  grid-row: 1 / 3; }
+.feature   { grid-column: 9 / 13; grid-row: 1 / 3; }
+
+@media (max-width: 1100px) {
+    .masthead,
+    .rail,
+    .statement,
+    .feature {
+        grid-column: 1 / 13;
+        grid-row: auto;
+        border-right: 0;
+        border-bottom: var(--rule);
+    }
+
+    .feature { border-bottom: 0; }
+}
+
+/* The mark field: the logo sits in its own ink block, where the
+   cyan wordmark reads 7.5:1 instead of 2:1 on paper. */
+.mark-field {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem var(--gutter);
+    background: var(--color-ink);
+}
+
+.mark-field img {
+    display: block;
+    width: 116px;
+    height: 40px;
+}
+
+.nav-list {
+    list-style: none;
+    margin: 0 0 var(--gutter);
+    padding: 0;
+}
+
+.nav-list a {
+    display: block;
+    padding: 0.4rem 0;
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 160ms var(--ease-out-expo);
+}
+
+/* The rail's categories are the column's content, not its chrome: they
+   scale to fill the height the rail has, bounded by the longest word
+   ("LAPTOPURI") against the three-column measure. Tracking loosens off
+   as the size climbs, the way a poster sets a large caps line. */
+.rail-head .nav-list a {
+    padding: 0.18em 0;
+    font-size: clamp(1.125rem, min(2vw, 3.4vh), 2.25rem);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+}
+
+.rail-head .nav-list {
+    margin-bottom: 1.75rem;
+}
+
+.nav-list a:hover {
+    color: var(--color-signal-deep);
+}
+
+.nav-list a[aria-current='page'] {
+    color: var(--color-signal-deep);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+}
+
+.price {
+    font-size: var(--text-section);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.finance-note {
+    display: inline-block;
+    margin-top: 0.75rem;
+    padding: 0.35rem 0.6rem;
+    background: var(--color-finance);
+    color: var(--color-ink);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* The geometric mark sizes from CSS so its layout box matches its paint. */
+/* Absolutely placed so the artwork fits the box the column can spare
+   instead of its own aspect ratio dictating the column's height. */
+.mark {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ------------------------------------------------------------------ *
+ * Closing module + utilities
+ * ------------------------------------------------------------------ */
+.span-4 { grid-column: span 4; }
+
+@media (max-width: 1100px) {
+    .span-4 {
+        grid-column: span 12;
+        border-right: 0;
+        border-bottom: var(--rule);
+    }
+
+    .span-4:last-child { border-bottom: 0; }
+}
+
+/* Running text that is secondary but still prose: never a label. */
+.note {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ------------------------------------------------------------------ *
+ * Offset screens — the world's third material, alongside ink and rule.
+ * Dot density carries meaning: heavier screen = more visible wear.
+ * ------------------------------------------------------------------ */
+.screen {
+    background-image: radial-gradient(var(--color-ink) 1.1px, transparent 1.2px);
+    background-position: 0 0;
+}
+
+.screen-50 { background-size: 5px 5px; }
+.screen-20 { background-size: 9px 9px; }
+.screen-05 { background-size: 16px 16px; }
+
+/* ------------------------------------------------------------------ *
+ * Section headers
+ * ------------------------------------------------------------------ */
+.span-2  { grid-column: span 2; }
+.span-6  { grid-column: span 6; }
+.span-8  { grid-column: span 8; }
+.span-12 { grid-column: span 12; }
+
+@media (max-width: 1100px) {
+    .span-2, .span-6, .span-8 {
+        grid-column: span 12;
+        border-right: 0;
+        border-bottom: var(--rule);
+    }
+}
+
+.section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * Category index — count is the content, not an ornament
+ * ------------------------------------------------------------------ */
+.cat {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 0;
+    gap: 0.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    text-decoration: none;
+    transition: background 200ms var(--ease-out-expo);
+}
+
+.cat:hover { background: var(--color-paper-deep); }
+
+.cat-count {
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.cat-name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0;
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.cat:hover .row-arrow { transform: translateX(0.25rem); }
+
+/* ------------------------------------------------------------------ *
+ * Graded catalog — the module re-sorts, it does not crossfade
+ * ------------------------------------------------------------------ */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border: var(--rule-strong);
+    width: fit-content;
+}
+
+.filter {
+    padding: 0.7rem 1.1rem;
+    border: 0;
+    border-right: var(--rule-strong);
+    background: transparent;
+    color: var(--color-ink);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 160ms var(--ease-out-expo), color 160ms var(--ease-out-expo);
+}
+
+.filter:last-child { border-right: 0; }
+.filter:hover { background: var(--color-paper-deep); }
+
+.filter[aria-pressed='true'] {
+    background: var(--color-signal-deep);
+    color: var(--color-paper);
+}
+
+.units {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: var(--rule);
+}
+
+@media (max-width: 1100px) { .units { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px)  { .units { grid-template-columns: minmax(0, 1fr); } }
+
+.unit {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: var(--gutter);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+    text-decoration: none;
+    transition: background 200ms var(--ease-out-expo);
+}
+
+.unit:hover { background: var(--color-paper-deep); }
+
+.unit-name {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+.unit-price {
+    margin-top: 0.35rem;
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.unit-grade {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 0.2rem 0.45rem;
+    background: var(--color-ink);
+    color: var(--color-axis);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------------ *
+ * Financing band — amber is a fill with ink on top, never ink itself
+ * ------------------------------------------------------------------ */
+.finance-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--color-finance);
+    color: var(--color-ink);
+}
+
+.finance-block .label { color: color-mix(in srgb, var(--color-ink) 70%, transparent); }
+
+.span-3 { grid-column: span 3; }
+
+@media (max-width: 1100px) {
+    .span-3 {
+        grid-column: span 12;
+        border-right: 0;
+        border-bottom: var(--rule);
+    }
+}
+
+.trust-field {
+    margin-top: 2.5rem;
+    border-top: var(--rule-strong);
+}
+
+.trust-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: var(--rule);
+}
+
+.trust-line span:last-child {
+    font-weight: 700;
+}
+
+.grade-plate {
+    height: 4.5rem;
+    border: var(--rule);
+    margin-bottom: 1rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * Short desktop viewports (laptops at 768–860px tall).
+ * The first screen carries the hero AND the category band, so the
+ * hero's rhythm tightens with the viewport rather than pushing the
+ * band out of sight. Width-based rules cannot see this; height can.
+ * ------------------------------------------------------------------ */
+@media (min-width: 1101px) and (max-height: 920px) {
+    :root {
+        --gutter: clamp(0.875rem, 1.8vw, 1.5rem);
+    }
+
+    .sub {
+        font-size: 1rem;
+    }
+
+    .rail,
+    .statement,
+    .feature {
+        gap: 1rem;
+    }
+
+    .trust-line {
+        padding: 0.45rem 0;
+    }
+
+    .grade {
+        padding: 0.4rem 0;
+    }
+
+    .row {
+        padding: 0.6rem 0;
+    }
+
+    /* Two units is the index on a short screen; the third is reachable
+       from the catalog below rather than clipped here. */
+    .feature a.row:nth-of-type(3) {
+        display: none;
+    }
+
+    .cat {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .cat-count {
+        font-size: 2rem;
+    }
+}
+
+/* ------------------------------------------------------------------ *
+ * Product photography
+ * Manufacturer shots arrive on pure white. Multiply drops that white
+ * into the paper ground, so a photograph sits ON the page instead of
+ * floating in a white box — the flat world survives real imagery.
+ * ------------------------------------------------------------------ */
+.product-photo,
+.unit-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+}
+
+.product-photo {
+    position: absolute;
+    inset: 0;
+}
+
+.unit-photo {
+    display: block;
+    height: 8.5rem;
+    margin-bottom: 0.35rem;
+}
+
+@media (min-width: 1101px) and (max-height: 920px) {
+    .unit-photo { height: 7rem; }
+}
