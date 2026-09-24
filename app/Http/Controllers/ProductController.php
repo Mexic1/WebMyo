@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\Accessories;
+use App\Data\Appliances;
 use App\Data\Catalog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,6 +21,21 @@ class ProductController extends Controller
         $product = Catalog::find($slug);
 
         if (! $product) {
+            // Accessories are simple products: no grade, no variants, no
+            // condition ladder. They get their own, much shorter page.
+            $accessory = Accessories::find($slug) ?? Appliances::find($slug);
+
+            if ($accessory) {
+                return Inertia::render('Accesoriu', [
+                    'accessory' => $accessory + ['compatibilitate' => $accessory['compatibilitate'] ?? 'Altele'],
+                    'related' => Accessories::find($slug)
+                        ? Accessories::related($accessory)
+                        : Appliances::related($accessory),
+                    'categories' => Catalog::categories(),
+                    'company' => Catalog::company(),
+                ]);
+            }
+
             throw new NotFoundHttpException("No product matches [{$slug}].");
         }
 

@@ -759,17 +759,142 @@ class Catalog
     }
 
     /**
-     * Products held for a category.
+     * What a category filters and sorts by. Facets are declared per
+     * category because a phone and a phone case have nothing in common
+     * to filter on: the listing page renders whatever it is handed and
+     * knows about neither.
      *
-     * Only phones are populated today: the 19 graded iPhones are the
-     * whole of what we hold. The other categories are declared with
-     * their real live counts but carry no products until the catalog
-     * migration runs, so they render an honest empty state rather than
-     * a 404. See PRODUCT.md.
+     * @return array{facets: array<string, string>, sorts: list<array{value: string, label: string}>}
+     */
+    public static function categoryConfig(string $slug): array
+    {
+        $byPrice = [
+            ['value' => 'price-desc', 'label' => 'Preț descrescător'],
+            ['value' => 'price-asc', 'label' => 'Preț crescător'],
+        ];
+
+        if ($slug === 'telefoane') {
+            return [
+                'facets' => [
+                    'producator' => 'Producător',
+                    'model' => 'Model',
+                    'memorie' => 'Memorie',
+                    'culoare' => 'Culoare',
+                    'stare' => 'Stare',
+                ],
+                'sorts' => [...$byPrice, ['value' => 'rank-desc', 'label' => 'Stare, de la cea mai bună']],
+            ];
+        }
+
+        if ($slug === 'accesorii') {
+            return [
+                'facets' => [
+                    'tip' => 'Tip',
+                    'compatibilitate' => 'Compatibilitate',
+                    'pret' => 'Preț',
+                ],
+                'sorts' => [...$byPrice, ['value' => 'name-asc', 'label' => 'Nume, A–Z']],
+            ];
+        }
+
+        if ($slug === 'smeg') {
+            // Declared ahead of the data. Facet VALUES are counted from
+            // the products, so these dropdowns appear the moment
+            // Appliances::all() returns rows, and stay hidden until then.
+            return [
+                'facets' => [
+                    'tip' => 'Tip',
+                    'pret' => 'Preț',
+                ],
+                'sorts' => [...$byPrice, ['value' => 'name-asc', 'label' => 'Nume, A–Z']],
+            ];
+        }
+
+        return ['facets' => [], 'sorts' => $byPrice];
+    }
+
+    /**
+     * Products held for a category, in one shape whatever the category.
+     *
+     * `attributes` carries whatever that category filters on; `badge`
+     * and `meta` are what its card shows. Categories with no data yet
+     * return nothing and the page says so.
      */
     public static function productsInCategory(string $slug): array
     {
-        return $slug === 'telefoane' ? self::products() : [];
+        if ($slug === 'telefoane') {
+            return array_map(fn (array $p) => [
+                'slug' => $p['slug'],
+                'name' => $p['name'],
+                'price' => $p['priceFrom'],
+                'thumb' => $p['thumb'],
+                'href' => '/produs/'.$p['slug'],
+                'badge' => $p['grade'],
+                'meta' => implode(', ', self::sizes($p)),
+                'inStock' => (bool) array_filter(array_column($p['variants'], 'inStock')),
+                'rank' => $p['gradeStep'],
+                'attributes' => [
+                    'producator' => [explode(' ', trim($p['name']), 2)[0]],
+                    'model' => [explode(' ', trim($p['name']), 2)[1] ?? $p['name']],
+                    'memorie' => self::sizes($p),
+                    'culoare' => array_values(array_unique(array_filter(
+                        array_column($p['variants'], 'colour'),
+                    ))),
+                    'stare' => [$p['grade']],
+                ],
+            ], self::products());
+        }
+
+        if ($slug === 'smeg') {
+            return array_map(fn (array $a) => [
+                'slug' => $a['slug'],
+                'name' => $a['name'],
+                'price' => $a['price'],
+                'thumb' => $a['thumb'],
+                'href' => '/produs/'.$a['slug'],
+                'badge' => $a['tip'],
+                'meta' => '',
+                'inStock' => true,
+                'rank' => 0,
+                'attributes' => [
+                    'tip' => [$a['tip']],
+                    'pret' => [$a['pret']],
+                ],
+            ], Appliances::all());
+        }
+
+        if ($slug === 'accesorii') {
+            return array_map(fn (array $a) => [
+                'slug' => $a['slug'],
+                'name' => $a['name'],
+                'price' => $a['price'],
+                'thumb' => $a['thumb'],
+                'href' => '/produs/'.$a['slug'],
+                'badge' => $a['tip'],
+                'meta' => $a['compatibilitate'] === 'Altele' ? '' : $a['compatibilitate'],
+                'inStock' => true,
+                'rank' => 0,
+                'attributes' => [
+                    'tip' => [$a['tip']],
+                    'compatibilitate' => [$a['compatibilitate']],
+                    'pret' => [$a['pret']],
+                ],
+            ], Accessories::all());
+        }
+
+        return [];
+    }
+
+    /** Distinct capacities a product is sold in, ascending. */
+    private static function sizes(array $product): array
+    {
+        $sizes = array_values(array_unique(array_filter(
+            array_column($product['variants'], 'storage'),
+        )));
+
+        usort($sizes, fn ($a, $b) => (int) $a <=> (int) $b);
+
+        return $sizes;
     }
 
     /** One product by slug, or null when nothing matches. */

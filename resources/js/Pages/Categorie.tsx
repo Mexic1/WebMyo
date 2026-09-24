@@ -9,90 +9,75 @@ import { useFlip } from '@/Hooks/useFlip';
 type Product = {
     slug: string;
     name: string;
-    brand: string;
-    model: string;
-    grade: string;
-    gradeStep: number;
     price: number | null;
     thumb: string | null;
     href: string;
-    storages: string[];
-    colours: string[];
+    badge: string;
+    meta: string;
     inStock: boolean;
+    rank: number;
+    attributes: Record<string, string[]>;
 };
 
-type Counts = Record<string, number>;
+type Facet = { key: string; label: string; options: Option[] };
 
 type Props = {
     category: Category & { slug: string; count: number };
     products: Product[];
-    facets: {
-        brands: Counts;
-        models: Counts;
-        grades: Counts;
-        storages: Counts;
-        colours: Counts;
-    };
+    facets: Facet[];
+    sorts: { value: string; label: string }[];
     categories: Category[];
     company: Company;
 };
 
-type Sort = 'price-desc' | 'price-asc' | 'grade-desc';
-type FacetKey = 'producator' | 'model' | 'memorie' | 'culoare' | 'stare';
-
 const lei = new Intl.NumberFormat('ro-RO');
+const collator = new Intl.Collator('ro');
 
-const SORTS: { value: Sort; label: string }[] = [
-    { value: 'price-desc', label: 'Preț descrescător' },
-    { value: 'price-asc', label: 'Preț crescător' },
-    { value: 'grade-desc', label: 'Stare, de la cea mai bună' },
-];
-
-const toOptions = (counts: Counts): Option[] =>
-    Object.entries(counts).map(([value, count]) => ({ value, count }));
-
-const readUrl = (key: FacetKey): string[] => {
+const readUrl = (key: string): string[] => {
     if (typeof window === 'undefined') return [];
     const raw = new URLSearchParams(window.location.search).get(key);
     return raw ? raw.split(',').filter(Boolean) : [];
 };
 
-export default function Categorie({ category, products, facets, categories, company }: Props) {
-    const [selected, setSelected] = useState<Record<FacetKey, string[]>>({
-        producator: readUrl('producator'),
-        model: readUrl('model'),
-        memorie: readUrl('memorie'),
-        culoare: readUrl('culoare'),
-        stare: readUrl('stare'),
-    });
-    const [sort, setSort] = useState<Sort>('price-desc');
-    const [openPanel, setOpenPanel] = useState<FacetKey | 'sortare' | null>(null);
+export default function Categorie({
+    category,
+    products,
+    facets,
+    sorts,
+    categories,
+    company,
+}: Props) {
+    const [selected, setSelected] = useState<Record<string, string[]>>(() =>
+        Object.fromEntries(facets.map((f) => [f.key, readUrl(f.key)])),
+    );
+    const [sort, setSort] = useState(sorts[0]?.value ?? 'price-desc');
+    const [openPanel, setOpenPanel] = useState<string | null>(null);
 
-    const toggle = (key: FacetKey) => (value: string) =>
-        setSelected((prev) => ({
-            ...prev,
-            [key]: prev[key].includes(value)
-                ? prev[key].filter((v) => v !== value)
-                : [...prev[key], value],
-        }));
+    const toggle = (key: string) => (value: string) =>
+        setSelected((prev) => {
+            const current = prev[key] ?? [];
+            return {
+                ...prev,
+                [key]: current.includes(value)
+                    ? current.filter((v) => v !== value)
+                    : [...current, value],
+            };
+        });
 
-    const clearFacet = (key: FacetKey) => () =>
-        setSelected((prev) => ({ ...prev, [key]: [] }));
-
-    const clearAll = () =>
-        setSelected({ producator: [], model: [], memorie: [], culoare: [], stare: [] });
+    const clearFacet = (key: string) => () => setSelected((prev) => ({ ...prev, [key]: [] }));
+    const clearAll = () => setSelected(Object.fromEntries(facets.map((f) => [f.key, []])));
 
     const activeCount = Object.values(selected).reduce((n, v) => n + v.length, 0);
 
     // The URL carries the filter state, so a filtered listing can be
-    // shared, bookmarked and reopened. Replace rather than push: each
-    // checkbox click should not become a browser-history entry.
+    // shared and reopened. Replace, not push: a checkbox click should
+    // not become a browser-history entry.
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
         const params = new URLSearchParams();
-        (Object.keys(selected) as FacetKey[]).forEach((key) => {
-            if (selected[key].length > 0) params.set(key, selected[key].join(','));
+        Object.entries(selected).forEach(([key, values]) => {
+            if (values.length > 0) params.set(key, values.join(','));
         });
 
         const query = params.toString();
@@ -104,40 +89,27 @@ export default function Categorie({ category, products, facets, categories, comp
     }, [selected]);
 
     const shown = useMemo(() => {
-        const out = products.filter(
-            (p) =>
-                (selected.producator.length === 0 || selected.producator.includes(p.brand)) &&
-                (selected.model.length === 0 || selected.model.includes(p.model)) &&
-                (selected.stare.length === 0 || selected.stare.includes(p.grade)) &&
-                (selected.memorie.length === 0 ||
-                    p.storages.some((s) => selected.memorie.includes(s))) &&
-                (selected.culoare.length === 0 ||
-                    p.colours.some((c) => selected.culoare.includes(c))),
+        // Values narrow within a facet, facets stack across each other.
+        const out = products.filter((p) =>
+            Object.entries(selected).every(([key, values]) => {
+                if (values.length === 0) return true;
+                return (p.attributes[key] ?? []).some((v) => values.includes(v));
+            }),
         );
 
         return [...out].sort((a, b) => {
             if (sort === 'price-asc') return (a.price ?? 0) - (b.price ?? 0);
-            if (sort === 'grade-desc')
-                return b.gradeStep - a.gradeStep || (b.price ?? 0) - (a.price ?? 0);
+            if (sort === 'name-asc') return collator.compare(a.name, b.name);
+            if (sort === 'rank-desc') return b.rank - a.rank || (b.price ?? 0) - (a.price ?? 0);
             return (b.price ?? 0) - (a.price ?? 0);
         });
     }, [products, selected, sort]);
 
     const register = useFlip(`${JSON.stringify(selected)}|${sort}`);
 
-    const chips = (Object.keys(selected) as FacetKey[]).flatMap((key) =>
-        selected[key].map((value) => ({ key, value })),
+    const chips = facets.flatMap((f) =>
+        (selected[f.key] ?? []).map((value) => ({ key: f.key, value })),
     );
-
-    const facetProps = (key: FacetKey, label: string, counts: Counts) => ({
-        label,
-        options: toOptions(counts),
-        selected: selected[key],
-        onToggle: toggle(key),
-        onClear: clearFacet(key),
-        open: openPanel === key,
-        onOpenChange: (o: boolean) => setOpenPanel(o ? key : null),
-    });
 
     return (
         <>
@@ -159,8 +131,7 @@ export default function Categorie({ category, products, facets, categories, comp
                 </nav>
             </div>
 
-            {/* ------------------------------------------- category nav */}
-            <nav className="module rule-bottom cat-nav" aria-label="Categorii">
+            <nav className="module rule-bottom" aria-label="Categorii">
                 {categories.map((c) => (
                     <a
                         key={c.href}
@@ -174,33 +145,33 @@ export default function Categorie({ category, products, facets, categories, comp
                 ))}
             </nav>
 
-            {/* ------------------------------------------- title + sort */}
             <div className="module rule-bottom">
                 <div className="cell span-12">
-                    <div className="section-head">
-                        <div>
-                            <h1 className="section-title">{category.label}</h1>
-                            <p className="note" style={{ marginTop: '0.4rem' }}>
-                                {shown.length === products.length
-                                    ? `${products.length} produse`
-                                    : `${shown.length} din ${products.length} produse`}
-                            </p>
-                        </div>
-
-                    </div>
+                    <h1 className="section-title">{category.label}</h1>
+                    <p className="note" style={{ marginTop: '0.4rem' }}>
+                        {shown.length === products.length
+                            ? `${products.length} produse`
+                            : `${shown.length} din ${products.length} produse`}
+                    </p>
                 </div>
             </div>
 
             {products.length > 0 && (
                 <>
-                    {/* --------------------------------------- filter bar */}
                     <div className="module rule-bottom">
                         <div className="cell span-12 facet-bar">
-                            <FilterDropdown {...facetProps('producator', 'Producător', facets.brands)} />
-                            <FilterDropdown {...facetProps('model', 'Model', facets.models)} />
-                            <FilterDropdown {...facetProps('memorie', 'Memorie', facets.storages)} />
-                            <FilterDropdown {...facetProps('culoare', 'Culoare', facets.colours)} />
-                            <FilterDropdown {...facetProps('stare', 'Stare', facets.grades)} />
+                            {facets.map((f) => (
+                                <FilterDropdown
+                                    key={f.key}
+                                    label={f.label}
+                                    options={f.options}
+                                    selected={selected[f.key] ?? []}
+                                    onToggle={toggle(f.key)}
+                                    onClear={clearFacet(f.key)}
+                                    open={openPanel === f.key}
+                                    onOpenChange={(o) => setOpenPanel(o ? f.key : null)}
+                                />
+                            ))}
 
                             {activeCount > 0 && (
                                 <button type="button" className="clear" onClick={clearAll}>
@@ -210,7 +181,7 @@ export default function Categorie({ category, products, facets, categories, comp
 
                             <SortDropdown
                                 label="Sortare"
-                                options={SORTS}
+                                options={sorts}
                                 value={sort}
                                 onChange={setSort}
                                 open={openPanel === 'sortare'}
@@ -245,7 +216,6 @@ export default function Categorie({ category, products, facets, categories, comp
                 {shown.length} produse afișate.
             </p>
 
-            {/* ------------------------------------------- listing */}
             <div className="module rule-strong-bottom">
                 {products.length === 0 ? (
                     <div className="cell span-12 empty-state">
@@ -283,18 +253,16 @@ export default function Categorie({ category, products, facets, categories, comp
                                         <img
                                             src={p.thumb}
                                             alt=""
-                                            width={600}
-                                            height={600}
+                                            width={500}
+                                            height={500}
                                             loading="lazy"
                                             decoding="async"
                                         />
                                     </span>
                                 )}
-                                <span className="unit-grade">{p.grade}</span>
+                                <span className="unit-grade">{p.badge}</span>
                                 <span className="unit-name">{p.name}</span>
-                                {p.storages.length > 0 && (
-                                    <span className="label">{p.storages.join(', ')}</span>
-                                )}
+                                {p.meta && <span className="label">{p.meta}</span>}
                                 <span className="unit-price tabular">
                                     {p.price !== null ? `${lei.format(p.price)} lei` : '—'}
                                 </span>

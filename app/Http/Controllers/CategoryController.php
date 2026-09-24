@@ -8,9 +8,9 @@ use Inertia\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * One category listing, driven by the slug. Facets are derived from the
- * products actually held, never hardcoded, so a category gains filters
- * as its catalog fills.
+ * One category listing for every category. Facets are counted from the
+ * products actually held, in the order the category declares, so this
+ * controller never learns what a phone or an accessory is.
  */
 class CategoryController extends Controller
 {
@@ -22,85 +22,78 @@ class CategoryController extends Controller
             throw new NotFoundHttpException("No category matches [{$slug}].");
         }
 
-        $products = array_map(fn (array $p) => [
-            'slug' => $p['slug'],
-            'name' => $p['name'],
-            // Brand is the first word of the name, model the remainder:
-            // "Apple iPhone 14 Pro Max" -> Apple / iPhone 14 Pro Max.
-            'brand' => self::brand($p['name']),
-            'model' => self::model($p['name']),
-            'grade' => $p['grade'],
-            'gradeStep' => $p['gradeStep'],
-            'price' => $p['priceFrom'],
-            'thumb' => $p['thumb'],
-            'href' => '/produs/'.$p['slug'],
-            'storages' => array_values(array_unique(array_filter(
-                array_column($p['variants'], 'storage'),
-            ))),
-            'colours' => array_values(array_unique(array_filter(
-                array_column($p['variants'], 'colour'),
-            ))),
-            'inStock' => (bool) array_filter(array_column($p['variants'], 'inStock')),
-        ], Catalog::productsInCategory($slug));
+        $products = Catalog::productsInCategory($slug);
+        $config = Catalog::categoryConfig($slug);
 
-        $facet = function (string $key) use ($products) {
-            $values = [];
+        $facets = [];
+
+        foreach ($config['facets'] as $key => $label) {
+            $counts = [];
 
             foreach ($products as $product) {
-                foreach ((array) $product[$key] as $value) {
-                    $values[$value] = ($values[$value] ?? 0) + 1;
+                foreach ($product['attributes'][$key] ?? [] as $value) {
+                    if ($value === '' || $value === null) {
+                        continue;
+                    }
+
+                    $counts[$value] = ($counts[$value] ?? 0) + 1;
                 }
             }
 
-            return $values;
-        };
-
-        $storages = $facet('storages');
-        uksort($storages, fn ($a, $b) => (int) $a <=> (int) $b);
-
-        $grades = [];
-        foreach (Catalog::grades() as $grade) {
-            $count = count(array_filter($products, fn ($p) => $p['grade'] === $grade['label']));
-
-            if ($count > 0) {
-                $grades[$grade['label']] = $count;
+            if ($counts === []) {
+                continue;
             }
+
+            $counts = self::ordered($key, $counts);
+
+            $facets[] = ['key' => $key, 'label' => $label, 'options' => $counts];
         }
-
-        $brands = [];
-        $models = [];
-
-        foreach ($products as $product) {
-            $brands[$product['brand']] = ($brands[$product['brand']] ?? 0) + 1;
-            $models[$product['model']] = ($models[$product['model']] ?? 0) + 1;
-        }
-
-        ksort($models, SORT_NATURAL);
 
         return Inertia::render('Categorie', [
             'category' => $category,
             'products' => $products,
-            'facets' => [
-                'brands' => $brands,
-                'models' => $models,
-                'grades' => $grades,
-                'storages' => $storages,
-                'colours' => $facet('colours'),
-            ],
+            'facets' => $facets,
+            'sorts' => $config['sorts'],
             'categories' => Catalog::categories(),
             'company' => Catalog::company(),
         ]);
     }
 
-    private static function brand(string $name): string
+    /**
+     * Facet values in the order a reader expects: capacities and price
+     * bands ascend, everything else leads with the largest group.
+     */
+    private static function ordered(string $key, array $counts): array
     {
-        return explode(' ', trim($name), 2)[0];
+        if ($key === 'memorie') {
+            uksort($counts, fn ($a, $b) => (int) $a <=> (int) $b);
+        } elseif ($key === 'pret') {
+            // Sorted by the band's lower bound, read off the label, so
+            // any category can declare its own bands without this
+            // method learning them. "Sub X" is always the first band.
+            uksort($counts, fn ($a, $b) => self::lowerBound($a) <=> self::lowerBound($b));
+        } elseif ($key === 'model') {
+            ksort($counts, SORT_NATURAL);
+        } else {
+            arsort($counts);
+        }
+
+        return array_map(
+            fn ($value, $count) => ['value' => $value, 'count' => $count],
+            array_keys($counts),
+            array_values($counts),
+        );
     }
 
-    private static function model(string $name): string
+    /** The lower bound of a price band, read from its label. */
+    private static function lowerBound(string $band): int
     {
-        $parts = explode(' ', trim($name), 2);
+        if (str_starts_with(mb_strtolower($band), 'sub')) {
+            return -1;
+        }
 
-        return $parts[1] ?? $parts[0];
+        preg_match('/[\d.]+/', $band, $m);
+
+        return (int) str_replace('.', '', $m[0] ?? '0');
     }
 }
