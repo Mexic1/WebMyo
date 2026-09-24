@@ -318,7 +318,7 @@ There are exactly three materials, all of them in the plane of the paper: **pape
 
 ## Shapes
 
-Every corner is square. `border-radius` is `0` throughout the shipped build; the incumbent MYO radius scale (5/10/20/50px) was not carried into this world and no rounded surface exists. Form language is rectangular fields, hairline rules and full-height bars.
+Every surface is square. `border-radius` is `0` on every container, cell, plate and field. **Controls are the single exception:** buttons and chooser chips are pills (`--radius-control: 99rem`), adopted 2026-09-24 with the enlarge interaction. The incumbent MYO theme did declare a radius scale (5/10/20/50px), so this restores a brand trait rather than inventing one. Form language is otherwise rectangular fields, hairline rules and full-height bars.
 
 The recurring geometry is a small authored vocabulary, drawn as inline SVG or CSS and coloured with the same tokens as the rest of the page:
 - **The quarter-arc** — a violet square with one corner turned, the featured unit's mark.
@@ -331,7 +331,7 @@ The recurring geometry is a small authored vocabulary, drawn as inline SVG or CS
 Icons are drawn geometry in inline SVG. There is no icon font and no glyph icon set in this system.
 
 ### Named Rules
-**The Square-Corner Rule.** Radius is zero everywhere. A rounded card in this world reads as a foreign component, not a variant.
+**The Square-Corner Rule.** Radius is zero on every surface — cards, cells, plates, fields, images. A rounded container in this world reads as a foreign component, not a variant. Radius belongs to controls alone, where it marks a thing as pressable: if it is round, you can click it.
 
 **The Authored-Geometry Rule.** Imagery is geometry this project draws: arcs, bars, rules, ladders, screens. No stock photography furniture, no gradient mesh, no glass. Product photography, when the catalog needs it, enters as a squared, full-bleed plate inside a cell — never as a floating rounded thumbnail.
 
@@ -340,7 +340,8 @@ Icons are drawn geometry in inline SVG. There is no icon font and no glyph icon 
 ## Components
 
 ### Buttons
-- **Shape:** square (`0` radius), inline-flex with content pushed apart (`justify-content: space-between`, 2.5rem minimum gap) so the marker sits at the far right edge.
+- **Shape:** pill (`--radius-control`), inline-flex with content pushed apart (`justify-content: space-between`) so the marker sits at the far right edge.
+- **Hover:** the control scales to 1.1 and a circle grows from its centre to fill it (chips: 1.06, raised above their neighbours). After ui-buttons "Enlarge", adapted — an explicit colour flip replaces `mix-blend-mode: difference`, which goes off-palette over violet and amber, and the circle scales rather than animating `width`, which would relayout every frame. The circle is transparent at rest and takes its colour on hover.
 - **Primary:** solid Signal Deep with paper text and a paper tick bar, label typography, asymmetric padding (`0.9rem 1rem 0.9rem 1.25rem`) that compensates for the tracking.
 - **Secondary:** transparent with a solid ink 1px border, ink text, and an arrow instead of a tick bar.
 - **Hover:** both variants invert to a solid ink field with paper text, 180ms on `--ease-out-expo` (`cubic-bezier(0.16, 1, 0.3, 1)`). No translate, no shadow.
@@ -407,7 +408,7 @@ Treated as part of the design, not left default: selection is paper on Signal De
 
 ### Don't:
 - **Don't** add a `box-shadow` anywhere, in any state, including as a fake hairline.
-- **Don't** round a corner; radius is `0` across the system.
+- **Don't** round a corner on any surface; radius is `0` everywhere except buttons and chips, which are pills.
 - **Don't** set body text, links or icons in `{colors.signal}`, and never place cyan on paper.
 - **Don't** use amber as ink; it is a fill with ink on top or it is absent.
 - **Don't** introduce blur, translucency, specular glass or a soft gradient wash — they were rejected with the glass library when this world was chosen. The offset screen's `radial-gradient` is a hard-stopped dot grid, not a ramp, and is the only gradient function in the system.

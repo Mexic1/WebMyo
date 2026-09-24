@@ -35,10 +35,21 @@
 }
 
 :root {
+    /* Controls are pill-shaped, per the enlarge reference. This is the
+       one place the system carries radius; every other surface stays
+       square. The incumbent MYO theme did declare a radius scale
+       (5/10/20/50px), so this restores a brand trait rather than
+       inventing one. */
+    --radius-control: 99rem;
     --rule: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
     --rule-strong: 1px solid var(--color-ink);
     --gutter: clamp(1rem, 2.5vw, 2.5rem);
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    /* Enlarge timing, in one place so the whole interaction retimes
+       together. Slowed 60% from the original 220/180/120. */
+    --enlarge-move: 352ms;
+    --enlarge-tint: 288ms;
+    --enlarge-fill: 192ms;
 }
 
 /* ------------------------------------------------------------------ *
@@ -174,8 +185,9 @@ select {
     align-items: center;
     justify-content: space-between;
     gap: 2.5rem;
-    padding: 0.9rem 1rem 0.9rem 1.25rem;
+    padding: 0.9rem 1.4rem 0.9rem 1.6rem;
     border: var(--rule-strong);
+    border-radius: var(--radius-control);
     background: transparent;
     color: var(--color-ink);
     font-size: var(--text-label);
@@ -184,12 +196,50 @@ select {
     text-transform: uppercase;
     text-decoration: none;
     cursor: pointer;
-    transition: background 180ms var(--ease-out-expo), color 180ms var(--ease-out-expo);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transition: color var(--enlarge-tint) var(--ease-out-expo),
+        transform var(--enlarge-move) var(--ease-out-expo),
+        border-color var(--enlarge-tint) var(--ease-out-expo);
 }
 
+/* ------------------------------------------------------------------ *
+ * Enlarge (after ui-buttons "Enlarge", .btn-34)
+ * Two moves: the control scales up, and a circle grows from its centre
+ * to fill it. Adapted in two places — square corners instead of the
+ * source's pill, because this world has no radius; and an explicit
+ * colour flip instead of mix-blend-mode: difference, which over violet
+ * or amber produces off-palette colour. The motion is the source's.
+ * ------------------------------------------------------------------ */
 .btn:hover {
-    background: var(--color-ink);
     color: var(--color-paper);
+    transform: scale(1.1);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    /* The source animates width, which relayouts every frame. Same
+       picture, composited: a fixed circle scaled from nothing. */
+    width: 110%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    /* Transparent at rest, not merely scaled to nothing: a circle that
+       is the same colour as the resting label reads as a contrast
+       failure to any static analyser, and drowns real findings. */
+    background: transparent;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform var(--enlarge-move) var(--ease-out-expo),
+        background-color var(--enlarge-fill) var(--ease-out-expo);
+}
+
+.btn:hover::before {
+    background: var(--color-ink);
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .btn-primary {
@@ -199,7 +249,6 @@ select {
 }
 
 .btn-primary:hover {
-    background: var(--color-ink);
     border-color: var(--color-ink);
     color: var(--color-paper);
 }
@@ -426,6 +475,13 @@ select {
     .statement > * + *,
     .feature > * + * {
         margin-top: 1.75rem;
+    }
+
+    /* Stacked, the plate is square: a tall plate pushes the price and
+       the buy action off a phone screen. */
+    .pdp-plate {
+        min-height: 0;
+        aspect-ratio: 1;
     }
 
     /* Stacked, the mark has no column height to fill, so it carries its
@@ -862,4 +918,277 @@ select {
 
 @media (min-width: 1101px) and (max-height: 920px) {
     .unit-photo { height: 7rem; }
+}
+
+/* ------------------------------------------------------------------ *
+ * Product page
+ * ------------------------------------------------------------------ */
+.crumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+}
+
+.crumbs a { text-decoration: none; }
+.crumbs a:hover { color: var(--color-signal-deep); }
+.crumbs [aria-current='page'] { color: var(--color-ink); }
+
+.span-9 { grid-column: span 9; }
+
+@media (max-width: 1100px) {
+    .span-9 {
+        grid-column: span 12;
+        border-right: 0;
+        border-bottom: var(--rule);
+    }
+}
+
+/* The plate: the unit at the largest scale the page gives it. */
+.pdp-plate {
+    position: relative;
+    /* Bounded: a viewport-relative plate alone balloons on tall screens. */
+    min-height: clamp(20rem, 58vh, 38rem);
+}
+
+/* An absolutely placed <img> with four insets and `width: auto` takes
+   its INTRINSIC width (2000px here) and overflows the box. The size has
+   to be stated. */
+.pdp-photo {
+    position: absolute;
+    inset: var(--gutter);
+    /* 90% of the available box, centred by auto margins against the
+       four insets — object-fit: contain then scales the phone to match. */
+    width: calc((100% - var(--gutter) * 2) * 0.9);
+    height: calc((100% - var(--gutter) * 2) * 0.9);
+    margin: auto;
+}
+
+.pdp-buy {
+    display: flex;
+    flex-direction: column;
+}
+
+.pdp-title {
+    margin: 0;
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.pdp-grade {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0 0;
+}
+
+.pdp-price {
+    margin: 1.25rem 0 0;
+    font-size: clamp(2rem, 3.4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+/* Choosers are typographic: a pressed chip inverts, it does not glow. */
+.chooser {
+    margin: 1.75rem 0 0;
+    padding: 0;
+    border: 0;
+}
+
+/* Every chooser is a fixed three-column grid, so a colour cell, a
+   capacity cell and a grade cell are the same size as each other no
+   matter how many options each carries. */
+.chooser-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+}
+
+.chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 3.5rem;
+    padding: 0.55rem 0.9rem;
+    border: var(--rule-strong);
+    border-radius: var(--radius-control);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transition: color var(--enlarge-tint) var(--ease-out-expo),
+        transform var(--enlarge-move) var(--ease-out-expo),
+        border-color var(--enlarge-tint) var(--ease-out-expo);
+    background: transparent;
+    color: var(--color-ink);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 160ms var(--ease-out-expo), color 160ms var(--ease-out-expo);
+}
+
+/* The same enlarge, at a smaller scale: chips sit in a tight grid and
+   1.1 would swallow their neighbours. Raised above them while hovered. */
+.chip:hover:not(:disabled) {
+    color: var(--color-paper);
+    border-color: var(--color-ink);
+    transform: scale(1.06);
+    z-index: 1;
+}
+
+.chip::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    width: 150%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: transparent;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform var(--enlarge-move) var(--ease-out-expo),
+        background-color var(--enlarge-fill) var(--ease-out-expo);
+}
+
+.chip:hover:not(:disabled)::before {
+    background: var(--color-ink);
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Selected stays inverted; its circle deepens rather than inverting back. */
+.chip[aria-pressed='true'] {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border-color: var(--color-ink);
+}
+
+.chip[aria-pressed='true']:hover::before {
+    background: var(--color-ink-soft);
+}
+
+/* Disabled chips do not move and do not fill. */
+.chip:disabled:hover {
+    transform: none;
+}
+
+.chip:disabled {
+    border-color: color-mix(in srgb, var(--color-ink) 22%, transparent);
+    color: var(--color-ink-muted);
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.stock {
+    margin: 1.5rem 0 0;
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.stock-in { color: var(--color-ink); }
+.stock-out { color: var(--color-ink-muted); }
+
+.stock-in::before,
+.stock-out::before {
+    content: '';
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-right: 0.5rem;
+    vertical-align: -1px;
+    background: currentColor;
+}
+
+/* Specs are a record, set as ruled rows. */
+.specs {
+    margin: 1.25rem 0 0;
+}
+
+.spec {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: var(--rule);
+}
+
+.spec dt {
+    color: var(--color-ink-muted);
+}
+
+.spec dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Chips that carry a price stack their two lines. */
+.chip {
+    gap: 0.15rem;
+    text-decoration: none;
+}
+
+.chip-price {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 0.72;
+}
+
+.chip-link {
+    color: var(--color-ink);
+}
+
+.spec-group {
+    margin: 2rem 0 0;
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+}
+
+/* An outbound reference, not a call to action: it reads as running text. */
+.spec-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    color: var(--color-signal-deep);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.spec-source:hover { text-decoration-thickness: 2px; }
+
+.inline-link {
+    color: var(--color-signal-deep);
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+/* Where an option lives when this grade cannot supply it. */
+.chip-note {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    opacity: 0.6;
 }
