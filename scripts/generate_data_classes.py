@@ -157,15 +157,22 @@ class Appliances
 
 def write_devices(data: dict) -> None:
     blocks = []
+    # Phones are generated separately: they carry variants and a
+    # condition ladder, which this flat shape has no room for.
     for category in ('tablete', 'ceasuri', 'laptopuri'):
         rows = '\n'.join(render_row(category, r) for r in data[category])
         blocks.append(f"        '{category}' => [\n{rows}\n        ],")
     joined = '\n'.join(blocks)
-    counts = ', '.join(f'{c} {len(data[c])}' for c in ('tablete', 'ceasuri', 'laptopuri'))
+    counts = ', '.join(f'{c} {len(data[c])}'
+                       for c in ('tablete', 'ceasuri', 'laptopuri'))
     Path('app/Data/Devices.php').write_text(HEAD + f'''/**
  * Tablets, watches and laptops — {counts}, imported from the client's
  * own WooCommerce Store API on 2026-09-25. Generated file: edit the
  * importer, not this.
+ *
+ * Phones are NOT here. They carry colour and capacity variants and a
+ * condition ladder, which this flat one-row-per-product shape has no
+ * room for, so they are generated into App\\Data\\Phones instead.
  *
  *     scripts/normalise_store_api.py && scripts/generate_data_classes.py
  *
@@ -178,8 +185,10 @@ def write_devices(data: dict) -> None:
  * carries the full price range in `price`/`priceMax`. This is why these
  * counts are lower than the live category pages claim.
  *
- * `stare` is the packaging state — "Sigilat" / "Openbox - Produs
- * Desigilat" — NOT the Bun/Excelent/Ca nou condition ladder.
+ * Two condition axes are kept apart. `ambalaj` is the packaging state
+ * — Sigilat / Resigilat / Openbox. `nota` is a condition grade in MYO's
+ * own vocabulary. They are different claims and merging them would let
+ * a sealed unit read as a graded one.
  */
 class Devices
 {{

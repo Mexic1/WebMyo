@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Data\Catalog;
+use App\Support\Size;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -10,6 +11,8 @@ class HomeController extends Controller
 {
     public function __invoke(): Response
     {
+        $phones = Catalog::products();
+
         $units = array_map(
             fn (array $p) => [
                 'name' => $p['name'],
@@ -19,11 +22,19 @@ class HomeController extends Controller
                 'image' => $p['image'],
                 'thumb' => $p['thumb'],
                 'href' => '/produs/'.$p['slug'],
+                'inStock' => self::inStock($p),
             ],
-            Catalog::products(),
+            $phones,
         );
 
-        $featured = Catalog::find('apple-iphone-16-pro-max-excelent') ?? Catalog::products()[0];
+        // The headline unit is the dearest phone that can actually be
+        // bought — chosen, never named. Add a dearer one and it takes
+        // the slot; sell this one and the next takes it back. Naming a
+        // slug here is how the homepage came to headline a sold-out
+        // iPhone. Only if nothing at all is in stock does the column
+        // fall back to the dearest overall, so it is never empty.
+        $available = array_values(array_filter($phones, self::inStock(...)));
+        $featured = ($available ?: $phones)[0];
 
         return Inertia::render('Home', [
             'catalog' => [
@@ -46,14 +57,18 @@ class HomeController extends Controller
         ]);
     }
 
+    /** A product is available while any one of its variants is. */
+    private static function inStock(array $product): bool
+    {
+        return (bool) array_filter(array_column($product['variants'], 'inStock'));
+    }
+
     /** Distinct capacities a product is sold in, in ascending order. */
     private static function storageSummary(array $product): ?string
     {
-        $sizes = array_values(array_unique(array_filter(
+        $sizes = Size::sort(array_values(array_unique(array_filter(
             array_column($product['variants'], 'storage'),
-        )));
-
-        usort($sizes, fn ($a, $b) => (int) $a <=> (int) $b);
+        ))));
 
         return $sizes ? implode(', ', $sizes) : null;
     }

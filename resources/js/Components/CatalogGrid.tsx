@@ -9,6 +9,8 @@ export type Unit = {
     image?: string;
     thumb?: string;
     href: string;
+    /** False once every variant is sold; ranks a unit below the rest. */
+    inStock: boolean;
 };
 
 type Grade = { label: string; step: number; note?: string };

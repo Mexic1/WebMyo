@@ -17,7 +17,13 @@ OUT = Path('storage/app/import/normalised.json')
 FACETS = {
     'pa_brand': 'producator',
     'pa_culoare': 'culoare',
-    'pa_stare': 'stare',
+    # Two different axes, kept apart on purpose. `pa_stare` is always
+    # packaging — Sigilat / Resigilat / Openbox. `pa_conditie` is a
+    # condition grade in MYO's own vocabulary. Merging them would let a
+    # sealed unit read as a graded one.
+    'pa_stare': 'ambalaj',
+    'pa_conditie': 'nota',
+    'pa_sloturi-sim': 'sloturi',
     'pa_memoria-interna': 'memorie',
     'pa_memorie-ram': 'ram',
     'pa_diagonala-display': 'diagonala',
@@ -47,12 +53,29 @@ def band(price: int) -> str:
             else '5.000 lei și peste')
 
 
-def row(p: dict) -> dict:
+def phone_model(name: str) -> str:
+    """The model a shopper would name, out of a full product title.
+
+    "Samsung Galaxy S24 Ultra, Dual SIM, 12GB RAM, 5G" -> "Galaxy S24
+    Ultra". The manufacturer is its own facet and everything after the
+    first comma is specification, not identity.
+    """
+    without_brand = re.sub(r'^(Samsung|Apple)\s+', '', name).strip()
+    return without_brand.split(',')[0].strip()
+
+
+def row(p: dict, category: str = '') -> dict:
     prices = p.get('prices') or {}
     rng = prices.get('price_range') or {}
     low = int(rng.get('min_amount') or prices.get('price') or 0)
     high = int(rng.get('max_amount') or prices.get('price') or 0)
     regular = int(prices.get('regular_price') or 0)
+
+    # A zero price is not a price. It means the product is unconfigured
+    # or has no purchasable variation; showing "0 lei" would be a lie,
+    # so it becomes null and the card renders a dash.
+    if low == 0:
+        low = high = None
 
     attributes = {}
     for a in p.get('attributes') or []:
@@ -61,8 +84,13 @@ def row(p: dict) -> dict:
         if key and terms:
             attributes[key] = terms
 
+    # Phones are shopped by model, which no attribute carries.
+    if category == 'telefoane':
+        attributes['model'] = [phone_model(clean(p['name']))]
+
     # Price is a facet like any other, so it is counted from the rows.
-    attributes['pret'] = [band(low)]
+    if low is not None:
+        attributes['pret'] = [band(low)]
 
     images = [i['src'] for i in (p.get('images') or []) if i.get('src')]
 
@@ -74,9 +102,9 @@ def row(p: dict) -> dict:
         'sku': p.get('sku') or None,
         'type': p['type'],
         'price': low,
-        'priceMax': high if high != low else None,
+        'priceMax': high if (high is not None and high != low) else None,
         # Only a genuine strike-through price, not a regular == sale echo.
-        'wasPrice': regular if regular > low else None,
+        'wasPrice': regular if (low is not None and regular > low) else None,
         'inStock': bool(p.get('is_in_stock')),
         'attributes': attributes,
         'images': images,
@@ -93,6 +121,18 @@ def main() -> int:
     for f in sorted(RAW.glob('p-*.json')):
         slug = f.stem[2:]
         products = json.loads(f.read_text())
+
+        # Graded iPhones are already held, with real variant data and
+        # colour photography the feed does not carry. Re-importing them
+        # would duplicate every one under a second slug — and their
+        # parents are deliberately absent here, so they are dropped
+        # before the orphan check rather than tripping it.
+        skipped_apple = 0
+        if slug == 'telefoane':
+            before = len(products)
+            products = [p for p in products if not clean(p['name']).startswith('Apple')]
+            skipped_apple = before - len(products)
+
         parents = [p for p in products if p['type'] != 'variation']
         variations = [p for p in products if p['type'] == 'variation']
 
@@ -108,11 +148,12 @@ def main() -> int:
         if orphans:
             orphaned.append((slug, orphans))
 
-        rows = sorted((row(p) for p in parents), key=lambda r: r['name'])
+        rows = sorted((row(p, slug) for p in parents), key=lambda r: r['name'])
         out[slug] = rows
-        report.append(f'{slug:<12} {len(rows):>3} products '
-                      f'({len(variations)} variation rows dropped, '
-                      f'all parents present)')
+        note = f'{len(variations)} variation rows dropped, all parents present'
+        if skipped_apple:
+            note += f'; {skipped_apple} Apple rows skipped (held separately)'
+        report.append(f'{slug:<12} {len(rows):>3} products ({note})')
 
     if orphaned:
         print('ORPHANED VARIATIONS — these have no parent in the feed and\n'

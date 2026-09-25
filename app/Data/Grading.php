@@ -24,8 +24,9 @@ class Grading
      * The comparison matrix: grades across, attributes down. This is the
      * layout every seller researched converges on.
      *
-     * `values` is keyed by grade label. A row marked `pending` has no
-     * values yet and renders as one gap spanning all three.
+     * `values` is keyed by grade label and must cover every step the
+     * ladder declares — see `Catalog::grades()`. A row marked `pending`
+     * has no values yet and renders as one gap spanning them all.
      *
      * @return list<array{label: string, values?: array<string, string>, pending?: string}>
      */
@@ -38,6 +39,8 @@ class Grading
                     'Bun' => 'Zgârieturi vizibile, posibil și cu ecranul pornit.',
                     'Excelent' => 'Zgârieturi fine, greu de observat de la o lungime de braț.',
                     'Ca nou' => 'Fără urme vizibile de folosire.',
+                    'Openbox' => 'Nefolosit.',
+                    'Sigilat' => 'Nefolosit.',
                 ],
             ],
             [
@@ -46,6 +49,18 @@ class Grading
                     'Bun' => 'Semne de uzură vizibile, fără impact asupra funcționării.',
                     'Excelent' => 'Micro-zgârieturi, vizibile doar de aproape sau în lumină directă.',
                     'Ca nou' => 'Aspect aproape nou.',
+                    'Openbox' => 'Nefolosit.',
+                    'Sigilat' => 'Nefolosit.',
+                ],
+            ],
+            [
+                'label' => 'Cutia',
+                'values' => [
+                    'Bun' => 'Desfăcută.',
+                    'Excelent' => 'Desfăcută.',
+                    'Ca nou' => 'Desfăcută.',
+                    'Openbox' => 'Desigilată, aparatul nefolosit.',
+                    'Sigilat' => 'Nedesfăcută.',
                 ],
             ],
             [
@@ -54,6 +69,8 @@ class Grading
                     'Bun' => 'Complet funcțional.',
                     'Excelent' => 'Complet funcțional.',
                     'Ca nou' => 'Complet funcțional.',
+                    'Openbox' => 'Complet funcțional.',
+                    'Sigilat' => 'Complet funcțional.',
                 ],
             ],
             [
@@ -80,9 +97,11 @@ class Grading
             [
                 'label' => 'Garanție',
                 'values' => [
-                    'Bun' => 'Aceeași pe toate gradele.',
-                    'Excelent' => 'Aceeași pe toate gradele.',
-                    'Ca nou' => 'Aceeași pe toate gradele.',
+                    'Bun' => 'Aceeași pe toate treptele.',
+                    'Excelent' => 'Aceeași pe toate treptele.',
+                    'Ca nou' => 'Aceeași pe toate treptele.',
+                    'Openbox' => 'Aceeași pe toate treptele.',
+                    'Sigilat' => 'Aceeași pe toate treptele.',
                 ],
             ],
         ];

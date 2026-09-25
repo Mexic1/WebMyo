@@ -78,7 +78,28 @@ Any data migration must therefore be treated as importing from an untrusted sour
 
 **The WooCommerce Store API is open and is the migration route.** `/wp-json/wc/store/v1/products` serves names, prices, sale prices, stock, categories, images and real attributes as JSON, 100 per page, with no authentication. Verified 2026-09-25 by importing SMEG, Tablete, Ceasuri and Laptopuri through it. This supersedes scraping: it is faster, politer, and it carries the published attributes that a rendered page does not. Note it is also readable by anyone, which is worth raising with the client as a competitive-intelligence exposure, not a security one.
 
-**The vocabulary is three steps: Bun → Excelent → Ca nou.** Corrected 2026-09-24. An earlier count in this file claimed four grades including "Nou"; that was wrong — `-nou` only matched as a substring of `-ca-nou`. No "Nou" or "Sigilat" grade exists in the catalog. Three steps is confirmed by slug and by each product's own variation data, but whether three is the vocabulary the client *intends* is still unconfirmed.
+**The vocabulary is now five steps, decided 2026-09-25: Bun → Excelent
+→ Ca nou → Openbox → Sigilat.** The client's instruction was that every
+phone must carry exactly one of these. Sigilat and Openbox describe a
+box that was never used; the three below them describe how much use
+shows. This replaces the earlier three-step reading and removes the
+split between a "grade" axis and a "packaging" axis — there is one
+ladder, and `Catalog::grades()` is its only definition.
+
+Two consequences to confirm with the client:
+
+- **"Foarte bun" is a sixth value that should not exist.** Two Samsung
+  products carry it via a `pa_conditie` attribute. The importer maps it
+  DOWN to `Bun` and reports it on every run, because describing a unit
+  as better than the catalog says is the one error with a cost. The
+  client should retag those two.
+- **`Sigilat` is advertised far more widely than it is sold.** Parent
+  products list Sigilat as an available option on 13 phones, but of 71
+  actually-configured variations only **one** is sigilat; 68 are
+  openbox. A facet counted off parent attributes overstates it, which
+  is why the listing now counts conditions from real variants instead.
+
+**Superseded — the earlier three-step reading:** Corrected 2026-09-24. An earlier count in this file claimed four grades including "Nou"; that was wrong — `-nou` only matched as a substring of `-ca-nou`. No "Nou" or "Sigilat" grade exists in the catalog. Three steps is confirmed by slug and by each product's own variation data, but whether three is the vocabulary the client *intends* is still unconfirmed.
 
 **The grading and pricing disagree with each other in places**, which the client should resolve: iPhone 12 is priced identically at Bun and Excelent (999 lei both), and iPhone SE prices Excelent (800) above Ca nou (700), inverting the ladder that iPhone 14 follows correctly.
 
@@ -158,6 +179,39 @@ Recorded rather than invented:
 - Which phone number and which email address are canonical (three numbers and two addresses are currently published across their properties).
 - Whether existing trust claims can be substantiated.
 - Internal staff workflows for the admin.
+### What the phone import exposed (2026-09-25)
+
+Importing the Samsung range surfaced four things the client should see.
+
+**1. Most of the graded iPhones are out of stock.** The Telefoane feed
+returned variation rows whose parent products were missing, because
+WooCommerce hides an out-of-stock parent from a category listing while
+its variations still appear. Fetching those 13 parents by id showed
+**12 of our 19 graded iPhones are `is_in_stock: false`** on the live
+site — iPhone 12 Bun/Excelent, 13 Pro Bun, 14 Bun/Excelent, 14 Plus
+Excelent, 14 Pro Bun/Excelent/Ca nou, 14 Pro Max Bun/Excelent/Ca nou.
+The graded catalog is far thinner than it looks. Confirm whether this is
+real or a stock-sync problem before launch.
+
+**2. Colour names are half Romanian, half English.** Our graded iPhones
+carry Romanian names (Argintiu, Negru, Mov intens); the imported Samsung
+carry the manufacturer's English (Black, Mint, Titanium Gray). Pooled
+into one filter that is **55 values with Negru and Black as separate
+options**. A mapping should not be invented here — the client should say
+which vocabulary is canonical, and the import should normalise to it.
+
+**3. A fourth grade value exists.** Two Samsung products carry a
+`pa_conditie` attribute — a different taxonomy from `pa_stare` — whose
+values include **"Foarte bun"**, which is not in the declared three-step
+ladder. Either the ladder is four steps or these two are mislabelled.
+
+**4. Samsung phones are not graded at all.** They carry `pa_stare`
+(Sigilat / Resigilat / Openbox — packaging) and no MYO grade. So the
+Telefoane listing mixes graded stock with ungraded stock. The page shows
+the two as separate facets, "Notă de stare" and "Ambalaj", and never
+merges them. If the client wants the Samsung range graded too, that is
+catalog work, not a display change.
+
 ### The grading page needs eight facts from the client
 
 `/cum-notam` is the page that carries the positioning, and most of it

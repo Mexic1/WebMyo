@@ -30,7 +30,16 @@ export default function Home({ catalog, categories, featured, units, company }: 
     const [activeGrade, setActiveGrade] = useState<string | null>(null);
     const steps = catalog.grades.length;
     const featuredStep = catalog.grades.find((g) => g.label === featured.grade)?.step ?? 1;
-    const railUnits = activeGrade ? units.filter((u) => u.grade === activeGrade) : units;
+    // What is in stock outranks what is dear, then price decides. The
+    // featured unit is already the head of this order, so it is dropped
+    // rather than repeated directly beneath itself: the rail shows the
+    // NEXT most expensive phones.
+    const ranked = [...units].sort(
+        (a, b) => Number(b.inStock) - Number(a.inStock) || b.price - a.price,
+    );
+
+    const railUnits = (activeGrade ? ranked.filter((u) => u.grade === activeGrade) : ranked)
+        .filter((u) => u.href !== featured.href);
 
     return (
         <>

@@ -131,14 +131,25 @@ export function useProductListing<T extends ListingProduct>({
             return terms.every((t) => text.includes(t));
         });
 
+        // A product with no price is not the cheapest one. Treating a
+        // null as 0 would float it to the top of "preț crescător" and
+        // show a dash where the lowest price should be, so it sorts to
+        // the end whichever direction is asked for.
+        const byPrice = (x: T, y: T, dir: 1 | -1) => {
+            if (x.price === null && y.price === null) return 0;
+            if (x.price === null) return 1;
+            if (y.price === null) return -1;
+            return (x.price - y.price) * dir;
+        };
+
         return [...out].sort((a, b) => {
-            if (sort === 'price-asc') return (a.price ?? 0) - (b.price ?? 0);
+            if (sort === 'price-asc') return byPrice(a, b, 1);
             if (sort === 'name-asc') return collator.compare(a.name, b.name);
             if (sort === 'rank-desc') {
                 const rank = (p: T) => (p as { rank?: number }).rank ?? 0;
-                return rank(b) - rank(a) || (b.price ?? 0) - (a.price ?? 0);
+                return rank(b) - rank(a) || byPrice(a, b, -1);
             }
-            return (b.price ?? 0) - (a.price ?? 0);
+            return byPrice(a, b, -1);
         });
         // `haystack` is a fresh closure each render; the values it reads
         // are already in the dependency list.

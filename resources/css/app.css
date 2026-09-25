@@ -2051,10 +2051,14 @@ select {
 }
 
 /* Below this the columns squeeze into one word per line and the
-   comparison stops being readable, so the wrapper scrolls instead. */
+   comparison stops being readable, so the wrapper scrolls instead.
+   `fixed` keeps every grade column the same width however many steps
+   the ladder declares; `auto` gave whichever column happened to hold
+   the longest sentence most of the table. */
 .grade-table {
     width: 100%;
-    min-width: 42rem;
+    min-width: 58rem;
+    table-layout: fixed;
     border-collapse: collapse;
     text-align: left;
 }
@@ -2074,14 +2078,13 @@ select {
     text-transform: uppercase;
 }
 
-.grade-table tbody th {
-    width: 22%;
-    min-width: 9rem;
+.grade-table tbody th,
+.grade-table thead th:first-child {
+    width: 9rem;
     font-weight: 700;
 }
 
 .grade-table td {
-    width: 26%;
     color: var(--color-ink-soft);
 }
 
@@ -2184,9 +2187,4 @@ select {
     color: var(--color-ink-soft);
 }
 
-@media (max-width: 1100px) {
-    .grade-table tbody th,
-    .grade-table td {
-        width: auto;
-    }
-}
+

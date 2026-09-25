@@ -3,7 +3,9 @@
 
 Reads storage/app/import/normalised.json, writes
 public/products/<category>/<slug>-500.webp at the same 500x400 white-
-ground size the accessory imagery already uses.
+ground size the accessory imagery already uses. Framing is handled by
+scripts/imageprep.py, which trims the ground so the subject fills the
+canvas — see public/products/README.md.
 
 Deliberately slow. The host began refusing connections during an
 earlier bulk image pull, so requests are spaced and the run is
@@ -13,22 +15,14 @@ interruption only fetches what is missing.
 import json, subprocess, sys, time, urllib.error, urllib.request
 from pathlib import Path
 
+from imageprep import prepare
+
 SRC = Path('storage/app/import/normalised.json')
 OUT = Path('public/products')
 DELAY = 1.5          # seconds between requests
 UA = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/131.0 Safari/537.36')
 
-
-def convert(raw: bytes, dest: Path) -> None:
-    """Fit onto a 500x400 white ground, matching the accessory set."""
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        ['magick', '-', '-resize', '500x400', '-background', 'white',
-         '-gravity', 'center', '-extent', '500x400', '-quality', '82',
-         '-define', 'webp:method=6', str(dest)],
-        input=raw, check=True, capture_output=True,
-    )
 
 
 def main() -> int:
@@ -50,7 +44,7 @@ def main() -> int:
         try:
             req = urllib.request.Request(url, headers={'User-Agent': UA})
             with urllib.request.urlopen(req, timeout=30) as resp:
-                convert(resp.read(), dest)
+                prepare(resp.read(), dest, (500, 400))
             ok += 1
             print(f'  [{i}/{len(todo)}] {dest.name}')
         except (urllib.error.URLError, subprocess.CalledProcessError, OSError) as e:

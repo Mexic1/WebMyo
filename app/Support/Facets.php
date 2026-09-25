@@ -67,7 +67,7 @@ class Facets
     private static function ordered(string $key, array $counts): array
     {
         if (in_array($key, self::CAPACITY_FACETS, true)) {
-            uksort($counts, fn ($a, $b) => self::capacity($a) <=> self::capacity($b));
+            uksort($counts, fn ($a, $b) => Size::inGb($a) <=> Size::inGb($b));
         } elseif (in_array($key, self::BAND_FACETS, true)) {
             // Sorted by the band's lower bound, read off the label, so
             // any category can declare its own bands without this
@@ -84,25 +84,6 @@ class Facets
             array_keys($counts),
             array_values($counts),
         );
-    }
-
-    /**
-     * A capacity in GB. "1 TB" has to outrank "512 GB", which a plain
-     * integer cast gets backwards.
-     */
-    private static function capacity(string $value): float
-    {
-        if (! preg_match('/([\d.,]+)\s*(TB|GB|MB)?/i', $value, $m)) {
-            return 0;
-        }
-
-        $size = (float) str_replace(',', '.', $m[1]);
-
-        return match (mb_strtoupper($m[2] ?? 'GB')) {
-            'TB' => $size * 1024,
-            'MB' => $size / 1024,
-            default => $size,
-        };
     }
 
     /**

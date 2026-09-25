@@ -2,6 +2,8 @@
 
 namespace App\Data;
 
+use App\Support\Size;
+
 /**
  * The catalog, as measured from the live myomobile.ro site on 2026-09-24.
  *
@@ -35,10 +37,15 @@ class Catalog
      */
     public static function grades(): array
     {
+        // One scale for every phone, best last. Sigilat and Openbox
+        // describe a box that was never used; the three below them
+        // describe how much use shows. A product carries exactly one.
         return [
             ['label' => 'Bun', 'step' => 1, 'note' => 'Urme de folosire vizibile. Funcțional complet.'],
             ['label' => 'Excelent', 'step' => 2, 'note' => 'Urme minime, vizibile de aproape.'],
             ['label' => 'Ca nou', 'step' => 3, 'note' => 'Fără urme vizibile de folosire.'],
+            ['label' => 'Openbox', 'step' => 4, 'note' => 'Nefolosit. Cutia a fost desigilată.'],
+            ['label' => 'Sigilat', 'step' => 5, 'note' => 'Nedesfăcut, în cutia originală.'],
         ];
     }
 
@@ -200,16 +207,48 @@ class Catalog
     }
 
     /** Hardware specification for the model a product belongs to. */
+/**
+     * A product slug without its condition suffix — the model that
+     * siblings at other conditions share. Every suffix in the ladder
+     * has to be listed here or those siblings stop finding each other.
+     */
+/**
+     * Romanian-aware comparison for names shown to a reader. The
+     * catalog mixes Romanian and English colour names, and a plain
+     * strcmp files "Ș" after "Z"; the collator does not.
+     */
+    private static function byName(string $a, string $b): int
+    {
+        static $collator = null;
+
+        if ($collator === null && class_exists(\Collator::class)) {
+            $collator = new \Collator('ro_RO');
+        }
+
+        return $collator ? $collator->compare($a, $b) : strnatcasecmp($a, $b);
+    }
+
+    public static function modelSlug(string $slug): string
+    {
+        return preg_replace('/-(sigilat|openbox|ca-nou|excelent|bun)$/', '', $slug);
+    }
+
     public static function specsFor(string $slug): ?array
     {
-        $model = preg_replace('/-(excelent|ca-nou|bun)$/', '', $slug);
+        $model = self::modelSlug($slug);
 
-        return self::specs()[$model] ?? null;
+        return self::specs()[$model] ?? Phones::specs()[$model] ?? null;
     }
 
     /** Every graded product, newest and priciest first. */
     public static function products(): array
     {
+        static $merged = null;
+
+        if ($merged !== null) {
+            return $merged;
+        }
+
         $products = [
                 [
                     'slug' => 'apple-iphone-12-bun',
@@ -775,7 +814,7 @@ class Catalog
         $images = self::colourImages();
 
         foreach ($products as &$product) {
-            $model = preg_replace('/-(excelent|ca-nou|bun)$/', '', $product['slug']);
+            $model = self::modelSlug($product['slug']);
             $colour = $product['variants'][0]['colourSlug'] ?? null;
             $image = $images[$model.'|'.$colour] ?? null;
 
@@ -785,9 +824,13 @@ class Catalog
 
         unset($product);
 
+        // The Samsung range arrives already in this shape, with its own
+        // imagery resolved at generation time.
+        $products = [...$products, ...Phones::all()];
+
         usort($products, fn ($a, $b) => ($b['priceFrom'] ?? 0) <=> ($a['priceFrom'] ?? 0));
 
-        return $products;
+        return $merged = $products;
     }
 
     /** Category metadata by slug, or null when the slug is not ours. */
@@ -831,7 +874,11 @@ class Catalog
             'tehnologie' => 'Tehnologie',
             'sistem' => 'Sistem de operare',
             'culoare' => 'Culoare',
-            'stare' => 'Stare',
+            // Two axes, never one dropdown. `nota` is MYO's condition
+            // grade; `ambalaj` is whether the box was opened.
+            'nota' => 'Notă de stare',
+            'ambalaj' => 'Ambalaj',
+            'sloturi' => 'SIM',
             'compatibilitate' => 'Compatibilitate',
             'pret' => 'Preț',
         ];
@@ -983,7 +1030,9 @@ class Catalog
 
         if ($slug === 'telefoane') {
             return [
-                'facets' => self::facets(['producator', 'model', 'memorie', 'culoare', 'stare']),
+                'facets' => self::facets([
+                    'producator', 'model', 'memorie', 'culoare', 'nota', 'ambalaj',
+                ]),
                 'sorts' => [...$byPrice, ['value' => 'rank-desc', 'label' => 'Stare, de la cea mai bună']],
             ];
         }
@@ -1004,7 +1053,7 @@ class Catalog
         // it helps, and a single-valued one is not a choice at all.
         if ($slug === 'smeg') {
             return [
-                'facets' => self::facets(['tip', 'culoare', 'stare', 'pret']),
+                'facets' => self::facets(['tip', 'culoare', 'ambalaj', 'pret']),
                 'sorts' => $byName,
             ];
         }
@@ -1018,7 +1067,7 @@ class Catalog
 
         if ($slug === 'ceasuri') {
             return [
-                'facets' => self::facets(['carcasa', 'ecran', 'autonomie', 'culoare', 'stare', 'pret']),
+                'facets' => self::facets(['carcasa', 'ecran', 'autonomie', 'culoare', 'ambalaj', 'pret']),
                 'sorts' => $byName,
             ];
         }
@@ -1041,17 +1090,43 @@ class Catalog
      * return nothing and the page says so.
      */
 
+/**
+     * A card badge is a label, not a sentence.
+     *
+     * The catalog writes packaging state in full — "Openbox - Produs
+     * Desigilat" — which wraps to two lines and shouts over the product
+     * name. The leading term carries the meaning, so the badge shows
+     * that; the full value stays in `attributes`, which is what the
+     * filter matches on, so nothing is lost.
+     */
+    private static function badgeLabel(?string $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        return trim(preg_split('/\s+[-–]\s+/', $value)[0]);
+    }
+
     /**
      * Imported rows already carry their real attributes, so a category
      * only has to say which one reads as the card's badge and which
      * make up its second line.
      *
+     * `$badgeKeys` is tried in order and the first attribute a product
+     * actually has wins. On a refurbished listing the badge should say
+     * what condition the unit is in, and which of the two condition
+     * axes a product carries varies per product.
+     *
      * @param  list<array<string, mixed>>  $rows
+     * @param  string|list<string>  $badgeKeys
      * @param  list<string>  $metaKeys
      */
-    private static function fromImport(array $rows, string $badgeKey, array $metaKeys): array
+    private static function fromImport(array $rows, string|array $badgeKeys, array $metaKeys): array
     {
-        return array_map(function (array $r) use ($badgeKey, $metaKeys) {
+        $badgeKeys = (array) $badgeKeys;
+
+        return array_map(function (array $r) use ($badgeKeys, $metaKeys) {
             $meta = [];
             foreach ($metaKeys as $key) {
                 $value = $r['attributes'][$key][0] ?? null;
@@ -1071,7 +1146,10 @@ class Catalog
                 'wasPrice' => $r['wasPrice'] ?? null,
                 'thumb' => $r['thumb'] ?? null,
                 'href' => '/produs/'.$r['slug'],
-                'badge' => $r['attributes'][$badgeKey][0] ?? '',
+                'badge' => self::badgeLabel(array_reduce(
+                    $badgeKeys,
+                    fn ($found, $key) => $found ?? ($r['attributes'][$key][0] ?? null),
+                )),
                 'meta' => implode(' · ', $meta),
                 'inStock' => $r['inStock'] ?? true,
                 'rank' => 0,
@@ -1083,7 +1161,9 @@ class Catalog
     public static function productsInCategory(string $slug): array
     {
         if ($slug === 'telefoane') {
-            return array_map(fn (array $p) => [
+            // Every phone, graded or sealed, is one product shape with
+            // one condition ladder — see Catalog::grades().
+            $graded = array_map(fn (array $p) => [
                 'slug' => $p['slug'],
                 'name' => $p['name'],
                 'price' => $p['priceFrom'],
@@ -1095,14 +1175,20 @@ class Catalog
                 'rank' => $p['gradeStep'],
                 'attributes' => [
                     'producator' => [explode(' ', trim($p['name']), 2)[0]],
-                    'model' => [explode(' ', trim($p['name']), 2)[1] ?? $p['name']],
+                    // The model a shopper would name. Everything after
+                    // the first comma is specification, not identity:
+                    // "Galaxy S24 Ultra", not "Galaxy S24 Ultra, Dual
+                    // SIM, 12GB RAM, 5G".
+                    'model' => [trim(explode(',', explode(' ', trim($p['name']), 2)[1] ?? $p['name'])[0])],
                     'memorie' => self::sizes($p),
                     'culoare' => array_values(array_unique(array_filter(
                         array_column($p['variants'], 'colour'),
                     ))),
-                    'stare' => [$p['grade']],
+                    'nota' => [$p['grade']],
                 ],
             ], self::products());
+
+            return $graded;
         }
 
         if ($slug === 'smeg') {
@@ -1146,13 +1232,9 @@ class Catalog
     /** Distinct capacities a product is sold in, ascending. */
     private static function sizes(array $product): array
     {
-        $sizes = array_values(array_unique(array_filter(
+        return Size::sort(array_values(array_unique(array_filter(
             array_column($product['variants'], 'storage'),
-        )));
-
-        usort($sizes, fn ($a, $b) => (int) $a <=> (int) $b);
-
-        return $sizes;
+        ))));
     }
 
     /** One product by slug, or null when nothing matches. */
@@ -1193,6 +1275,9 @@ class Catalog
             'apple-iphone-16-pro-max|black-titanium' => '/products/apple-iphone-16-pro-max-black-titanium.avif',
             'apple-iphone-16-pro-max|natural-titanium' => '/products/apple-iphone-16-pro-max-natural-titanium.avif',
             'apple-iphone-se|black' => '/products/apple-iphone-se-black.avif',
+            // The Samsung set is generated, not hand-prepared, so it
+            // joins here rather than being pasted in.
+            ...Phones::colourImages(),
         ];
     }
 
@@ -1210,11 +1295,11 @@ class Catalog
      */
     public static function modelMatrix(string $slug): array
     {
-        $model = preg_replace('/-(excelent|ca-nou|bun)$/', '', $slug);
+        $model = self::modelSlug($slug);
 
         $siblings = array_values(array_filter(
             self::products(),
-            fn ($p) => preg_replace('/-(excelent|ca-nou|bun)$/', '', $p['slug']) === $model,
+            fn ($p) => self::modelSlug($p['slug']) === $model,
         ));
 
         $colours = [];
@@ -1247,7 +1332,15 @@ class Catalog
             }
         }
 
-        usort($storages, fn ($a, $b) => (int) $a <=> (int) $b);
+        $storages = Size::sort($storages);
+
+        // Colours have no natural order, so they get a stable one.
+        // Left alone they follow the order variants happen to arrive
+        // in, which is the feed's order for imported products and would
+        // shuffle the pills on the next import for no visible reason.
+        // This does NOT pick the card photograph — that follows the
+        // product's first variant, not this list.
+        uasort($colours, self::byName(...));
 
         return [
             'colours' => array_map(
@@ -1270,10 +1363,10 @@ class Catalog
      */
     public static function gradesForModel(string $slug): array
     {
-        $model = preg_replace('/-(excelent|ca-nou|bun)$/', '', $slug);
+        $model = self::modelSlug($slug);
         $siblings = array_filter(
             self::products(),
-            fn ($p) => preg_replace('/-(excelent|ca-nou|bun)$/', '', $p['slug']) === $model,
+            fn ($p) => self::modelSlug($p['slug']) === $model,
         );
 
         return array_map(function (array $grade) use ($siblings) {
