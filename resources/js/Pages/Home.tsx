@@ -65,7 +65,7 @@ export default function Home({ catalog, categories, featured, units, company }: 
                     </p>
 
                     <div className="actions">
-                        <a className="btn btn-primary" href="#catalog">
+                        <a className="btn btn-primary" href="/magazin">
                             Vezi catalogul
                             <Arrow />
                         </a>

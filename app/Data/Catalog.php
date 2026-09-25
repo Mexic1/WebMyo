@@ -812,6 +812,7 @@ class Catalog
     public static function attributeLabels(): array
     {
         return [
+            'categorie' => 'Categorie',
             'tip' => 'Tip',
             'producator' => 'Producător',
             'model' => 'Model',
@@ -861,6 +862,84 @@ class Catalog
         }
 
         return $specs;
+    }
+
+/**
+     * One price band scheme for the whole catalog.
+     *
+     * Each category declares its own bands, tuned to its own range —
+     * accessories split around 200 and 350 lei, appliances around 1.000
+     * and 5.000. Those are right per category and meaningless across
+     * them: pooled into one dropdown they overlap and contradict. The
+     * catalog-wide listing therefore rebands every product with this,
+     * ignoring whatever its category said.
+     */
+    public static function priceBand(?int $price): string
+    {
+        return match (true) {
+            $price === null => 'Preț la cerere',
+            $price < 500 => 'Sub 500 lei',
+            $price < 1000 => '500 – 999 lei',
+            $price < 2500 => '1.000 – 2.499 lei',
+            $price < 5000 => '2.500 – 4.999 lei',
+            default => '5.000 lei și peste',
+        };
+    }
+
+    /**
+     * Every product the storefront holds, across every category, in one
+     * flat list for the catalog-wide listing.
+     *
+     * Two attributes are rewritten on the way out: `categorie`, which
+     * only means something once categories are mixed, and `pret`, which
+     * is rebanded onto the shared scheme above.
+     *
+     * Note `stare` is deliberately left as each category supplied it and
+     * is NOT offered as a catalog-wide facet: a phone's Bun/Excelent/Ca
+     * nou grade and an appliance's Sigilat/Openbox packaging state are
+     * different claims, and one dropdown listing all five would invite
+     * a visitor to read them as one ladder.
+     */
+    public static function allProducts(): array
+    {
+        static $all = null;
+
+        if ($all !== null) {
+            return $all;
+        }
+
+        $all = [];
+
+        foreach (self::categories() as $category) {
+            foreach (self::productsInCategory($category['slug']) as $product) {
+                $product['category'] = $category['label'];
+                $product['categorySlug'] = $category['slug'];
+                $product['attributes']['categorie'] = [$category['label']];
+                $product['attributes']['pret'] = [self::priceBand($product['price'])];
+
+                $all[] = $product;
+            }
+        }
+
+        return $all;
+    }
+
+    /**
+     * What the catalog-wide listing filters and sorts by. Only
+     * attributes that mean the same thing in every category can appear.
+     *
+     * @return array{facets: array<string, string>, sorts: list<array{value: string, label: string}>}
+     */
+    public static function catalogConfig(): array
+    {
+        return [
+            'facets' => self::facets(['categorie', 'producator', 'pret']),
+            'sorts' => [
+                ['value' => 'name-asc', 'label' => 'Nume, A–Z'],
+                ['value' => 'price-asc', 'label' => 'Preț crescător'],
+                ['value' => 'price-desc', 'label' => 'Preț descrescător'],
+            ],
+        ];
     }
 
     /**

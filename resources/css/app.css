@@ -1725,6 +1725,41 @@ select {
 }
 
 /* ------------------------------------------------------------------ *
+ * Catalog-wide listing. Search leads here rather than sitting in the
+ * facet bar: on this page finding IS the task, so the field is given
+ * its own line and a size to match.
+ * ------------------------------------------------------------------ */
+.catalog-search {
+    display: flex;
+    margin-top: 1.5rem;
+    max-width: 38rem;
+}
+
+/* The field is inline-flex in the facet bar, where it sits beside the
+   dropdowns. Here it is the only thing on its line, so it takes it. */
+.catalog-search .search-field {
+    flex: 1;
+    max-width: none;
+    padding: 0.95rem 1.25rem;
+}
+
+.catalog-search .search-input,
+.catalog-search .search-input::placeholder {
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+}
+
+.catalog-search .search-input::placeholder {
+    text-transform: none;
+    font-weight: 400;
+}
+
+.catalog-search .search-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* ------------------------------------------------------------------ *
  * Category search — a pill in the facet bar, between the filters and
  * the sort control. It reads as one of them: same rule, same radius,
  * same label type. It grows into whatever width the bar has spare,

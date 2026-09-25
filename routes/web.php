@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -18,7 +19,7 @@ $pending = fn (string $title, string $note) => fn () => Inertia::render('Pending
     'note' => $note,
 ]);
 
-Route::get('/magazin', $pending('Catalog', 'Catalogul complet, cu filtrare după notă de stare.'))->name('shop');
+Route::get('/magazin', CatalogController::class)->name('shop');
 Route::get('/cum-notam', $pending('Cum notăm aparatele', 'Procesul de testare și scara de stare, explicate pas cu pas.'))->name('grading');
 Route::get('/categorie/{slug}', CategoryController::class)->name('category')->where('slug', '[a-z0-9-]+');
 Route::get('/produs/{slug}', ProductController::class)->name('product')->where('slug', '[a-z0-9-]+');
