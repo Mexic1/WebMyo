@@ -158,4 +158,42 @@ Recorded rather than invented:
 - Which phone number and which email address are canonical (three numbers and two addresses are currently published across their properties).
 - Whether existing trust claims can be substantiated.
 - Internal staff workflows for the admin.
+### The grading page needs eight facts from the client
+
+`/cum-notam` is the page that carries the positioning, and most of it
+cannot be written from the outside. Researched 2026-09-25 against Back
+Market, Amazon Renewed, Swappie, flip.ro and refurbished.ro: every one
+of them publishes concrete, checkable numbers, and that is precisely
+what makes the page work. Borrowing their numbers would be fabrication.
+
+Needed before the page can be published:
+
+1. The real testing process and how many checkpoints it has.
+2. The minimum battery health guaranteed, and whether it is flat across
+   grades or varies by grade. (Industry floor is 80%; flip.ro says 85%.
+   **Do not default to either.**)
+3. The real commercial warranty term, and whether it is flat across
+   grades. The footer currently says 12 months — confirm it.
+4. Box contents: original or compatible cable/charger, per product line.
+5. The data-erasure method, and whether it is certified.
+6. Whether SIM-lock / IMEI blacklist status is verified per unit.
+7. The return window, kept distinct from the 14-day legal withdrawal
+   right (those are different rights and must not be conflated).
+8. Whether real close-up photographs of wear exist per grade.
+
+**Legal frame, to verify against the consolidated statute before any
+legal claim is published.** Legea 449/2003 was repealed on 2022-01-01
+and replaced by OUG 140/2021 (transposing Directive (EU) 2019/771).
+The conformity guarantee is 2 years, reducible by agreement to not less
+than 1 year for second-hand goods, with a 1-year presumption that a
+defect existed at delivery. This came from Romanian law-firm commentary,
+not from the statute: `legislatie.just.ro` disallows automated fetch, so
+the article number is **unconfirmed** and a lawyer should check it.
+
+**Claims that carry legal risk if unsubstantiated:** any specific battery
+percentage, "certificat", a checkpoint count, certified data erasure,
+"original" accessories, SIM-lock guarantees, and the existing
+"96% din clienții noștri sunt mulțumiți" — unfair-commercial-practice
+exposure under Legea 363/2007 without an auditable source.
+
 - **The graded/ungraded catalog gap.** Only 19 of 446 products carry a condition grade (all iPhones), while the Telefoane category alone holds 145. The homepage currently shows a 145-product category tile above a 19-unit graded grid, which reads as truncated. Deferred deliberately (2026-09-24): the fix is grading the rest of the catalog during the WordPress migration, not a label on the homepage. Revisit when real grading data exists.

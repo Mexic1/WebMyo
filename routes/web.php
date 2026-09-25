@@ -20,7 +20,15 @@ $pending = fn (string $title, string $note) => fn () => Inertia::render('Pending
 ]);
 
 Route::get('/magazin', CatalogController::class)->name('shop');
-Route::get('/cum-notam', $pending('Cum notăm aparatele', 'Procesul de testare și scara de stare, explicate pas cu pas.'))->name('grading');
+Route::get('/cum-notam', fn () => Inertia::render('CumNotam', [
+    'grades' => App\Data\Catalog::grades(),
+    'matrix' => App\Data\Grading::matrix(),
+    'unaffected' => App\Data\Grading::unaffected(),
+    'pending' => App\Data\Grading::pending(),
+    'faq' => App\Data\Grading::faq(),
+    'categories' => App\Data\Catalog::categories(),
+    'company' => App\Data\Catalog::company(),
+]))->name('grading');
 Route::get('/categorie/{slug}', CategoryController::class)->name('category')->where('slug', '[a-z0-9-]+');
 Route::get('/produs/{slug}', ProductController::class)->name('product')->where('slug', '[a-z0-9-]+');
 Route::get('/cos', $pending('Coș', 'Coșul și finalizarea comenzii, cu plată în rate prin LeanPay și TBI Credit.'))->name('cart');

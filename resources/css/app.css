@@ -2006,3 +2006,187 @@ select {
    style attribute — an inline style would force 'unsafe-inline' into
    any future style-src policy. */
 .error-lede { margin-top: 2rem; }
+
+/* ------------------------------------------------------------------ *
+ * Cum notăm aparatele — the grading explainer.
+ *
+ * The page is a comparison table with prose either side of it, which is
+ * the shape every serious refurbished seller has converged on. Its
+ * unfinished parts are marked rather than filled: a gap the client can
+ * see is worth more than a plausible number nobody verified.
+ * ------------------------------------------------------------------ */
+.display-sm {
+    margin: 0;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+}
+
+.doc-lede {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* The ladder as a static diagram: the homepage's control, with the
+   interaction taken out. */
+.grade-static {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: var(--row-h);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-paper) 18%, transparent);
+}
+
+.grade-static:last-child {
+    border-bottom: 0;
+}
+
+.grade-table-wrap {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+}
+
+/* Below this the columns squeeze into one word per line and the
+   comparison stops being readable, so the wrapper scrolls instead. */
+.grade-table {
+    width: 100%;
+    min-width: 42rem;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.grade-table th,
+.grade-table td {
+    padding: 1rem 1.25rem 1rem 0;
+    border-bottom: var(--rule);
+    vertical-align: top;
+}
+
+.grade-table thead th {
+    border-bottom: var(--rule-strong);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.grade-table tbody th {
+    width: 22%;
+    min-width: 9rem;
+    font-weight: 700;
+}
+
+.grade-table td {
+    width: 26%;
+    color: var(--color-ink-soft);
+}
+
+/* A gap, marked as one. Amber is the page's attention colour and it is
+   used here for the same reason it is used on the finance note: this
+   is the thing to look at. */
+.pending-mark {
+    display: inline-block;
+    margin-right: 0.6rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--color-finance);
+    color: var(--color-ink);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.pending-note {
+    color: var(--color-ink-muted);
+}
+
+.pending-block {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border: 1px dashed var(--color-ink-muted);
+    color: var(--color-ink-muted);
+    font-size: 0.875rem;
+    line-height: 1.55;
+}
+
+/* Rules are drawn on the cells, not as a background showing through
+   gaps: the last row is rarely full, and a gap-coloured ground turns
+   the leftover cells into a slab. */
+.pending-list {
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: pending;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    border-top: var(--rule);
+    border-left: var(--rule);
+}
+
+.pending-list li {
+    counter-increment: pending;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+}
+
+.pending-list li::before {
+    content: counter(pending, decimal-leading-zero);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--color-signal-deep);
+}
+
+.pending-title {
+    font-weight: 700;
+}
+
+.plain-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plain-list li {
+    padding: 0.7rem 0;
+    border-bottom: var(--rule);
+}
+
+.plain-list li:last-child {
+    border-bottom: 0;
+}
+
+.faq {
+    margin: 1.5rem 0 0;
+}
+
+.faq-item {
+    padding: 1.25rem 0;
+    border-bottom: var(--rule);
+}
+
+.faq-item dt {
+    font-weight: 700;
+}
+
+.faq-item dd {
+    margin: 0.5rem 0 0;
+    max-width: 68ch;
+    color: var(--color-ink-soft);
+}
+
+@media (max-width: 1100px) {
+    .grade-table tbody th,
+    .grade-table td {
+        width: auto;
+    }
+}

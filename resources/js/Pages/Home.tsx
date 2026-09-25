@@ -214,7 +214,7 @@ export default function Home({ catalog, categories, featured, units, company }: 
             </div>
 
             {/* ---------------------------------------------- graded catalog */}
-            <section id="catalog" className="module rule-strong-bottom" aria-label="Catalog notat">
+            <section className="module rule-strong-bottom" aria-label="Catalog notat">
                 <CatalogGrid
                         units={units}
                         grades={catalog.grades}

@@ -115,8 +115,11 @@ class Facets
             return -INF;
         }
 
+        // A label with no number in it is not a band on the scale —
+        // "Preț la cerere" is not cheaper than "Sub 500 lei". Send it
+        // to the end rather than letting it read as the first step.
         if (! preg_match('/\d+(?:[.,]\d+)?/', $band, $m)) {
-            return 0;
+            return INF;
         }
 
         $number = $m[0];

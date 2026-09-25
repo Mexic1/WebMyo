@@ -933,6 +933,12 @@ class Catalog
     public static function catalogConfig(): array
     {
         return [
+            // `producator` is published for phones and imported devices
+            // but not for accessories or appliances, so selecting any
+            // manufacturer drops roughly 200 of 277 products rather
+            // than showing them as "no manufacturer". That is correct —
+            // we do not know who made them — but it reads as a broken
+            // filter if you are not expecting it.
             'facets' => self::facets(['categorie', 'producator', 'pret']),
             'sorts' => [
                 ['value' => 'name-asc', 'label' => 'Nume, A–Z'],
