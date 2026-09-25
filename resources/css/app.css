@@ -395,7 +395,11 @@ select {
    neither leaves blank space and nothing needs scrolling to reach. */
 .screen-one {
     display: grid;
-    grid-template-rows: 1fr auto;
+    /* Header, hero, category index. The hero is the flexible one: it
+       takes whatever the fixed bands above and below it do not. The
+       header has to be INSIDE this budget — left outside, it pushed
+       the category band off the bottom of a 768px screen. */
+    grid-template-rows: auto 1fr auto;
     min-height: 100vh;
     min-height: 100svh;
 }
@@ -497,14 +501,13 @@ select {
     }
 }
 
-/* Every column starts below the masthead band and spans the same four
-   rows. The rail and the statement subgrid onto them so HARDWARE lands
-   on TELEFOANE's line; the feature column lays itself out and is NOT
-   tied to that band — its photograph wants the full column height. */
-.masthead  { grid-column: 1 / 4;  grid-row: 1; padding: 0; border-right: var(--rule); }
-.rail      { grid-column: 1 / 4;  grid-row: 2 / 6; }
-.statement { grid-column: 4 / 9;  grid-row: 2 / 6; }
-.feature   { grid-column: 9 / 13; grid-row: 2 / 6; }
+/* The three columns span the same four rows. The rail and the
+   statement subgrid onto them so HARDWARE lands on TELEFOANE's line;
+   the feature column lays itself out and is NOT tied to that band —
+   its photograph wants the full column height. */
+.rail      { grid-column: 1 / 4;  grid-row: 1 / 5; }
+.statement { grid-column: 4 / 9;  grid-row: 1 / 5; }
+.feature   { grid-column: 9 / 13; grid-row: 1 / 5; }
 
 /* ------------------------------------------------------------------ *
  * The hero's shared vertical band.
@@ -521,9 +524,11 @@ select {
  * short viewport, which is the job the columns' `gap` used to do.
  * ------------------------------------------------------------------ */
 @media (min-width: 1101px) {
+    /* Four rows now that the mark has its own band above the hero:
+       spacer, head, spacer, feet. The subgrid columns span all four,
+       so their local rows 1-4 are these. */
     .hero-split {
         grid-template-rows:
-            auto
             minmax(var(--gutter), 1fr)
             auto
             minmax(var(--gutter), 1fr)
@@ -552,9 +557,8 @@ select {
         padding-top: 0;
     }
 
-    /* Row numbering inside a subgrid is local: rows 1-4 here are the
-       hero's rows 2-5, so the head band is local row 2 and the feet
-       are local row 4. */
+    /* Row numbering inside a subgrid is local, and here it lines up
+       with the hero's own: the head band is row 2, the feet row 4. */
     .hero-split .rail-head {
         grid-row: 2;
         align-self: start;
@@ -2188,3 +2192,189 @@ select {
 }
 
 
+
+
+/* ------------------------------------------------------------------ *
+ * Site header — one ink band across every page.
+ *
+ * The mark used to occupy three columns of the first grid row, with
+ * breadcrumbs beside it. It now spans the full width and the rows
+ * below start beneath it.
+ * ------------------------------------------------------------------ */
+.site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gutter);
+    padding: 1.25rem var(--gutter);
+    background: var(--color-ink);
+    border-bottom: var(--rule-strong);
+}
+
+.site-mark {
+    display: block;
+    line-height: 0;
+}
+
+.site-mark img {
+    display: block;
+    width: 116px;
+    height: 40px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* The enlarge interaction inverted for an ink ground: the circle
+   arrives in paper and the mark turns to ink, rather than the other
+   way round. Same timings, so it reads as the same control. */
+.btn-on-ink {
+    border-color: color-mix(in srgb, var(--color-paper) 34%, transparent);
+    color: var(--color-paper);
+}
+
+.btn-on-ink:hover {
+    border-color: var(--color-paper);
+    color: var(--color-ink);
+}
+
+.btn-on-ink:hover::before {
+    background: var(--color-paper);
+}
+
+@media (max-width: 700px) {
+    .site-header {
+        padding: 1rem var(--gutter);
+    }
+}
+
+
+/* ------------------------------------------------------------------ *
+ * Very short desktop screens (≤ 820px tall).
+ *
+ * The first screen carries three bands now — header, hero, category
+ * index — and the condition ladder grew from three steps to five. At
+ * this height the previous compression is no longer enough, so the
+ * fixed bands give up what they can and the hero keeps the rest.
+ * ------------------------------------------------------------------ */
+@media (min-width: 1101px) and (max-height: 820px) {
+    :root {
+        --row-h: 1.85rem;
+    }
+
+    .site-header {
+        padding: 0.75rem var(--gutter);
+    }
+
+    .site-mark img {
+        width: 87px;
+        height: 30px;
+    }
+
+    .site-header .btn-icon {
+        width: 2.1rem;
+        height: 2.1rem;
+    }
+
+    /* One unit is the index here; the rest are one click away in the
+       catalog below. */
+    .feature a.row:nth-of-type(2) {
+        display: none;
+    }
+
+    .cat {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+    }
+
+    .cat-count {
+        font-size: 1.5rem;
+    }
+
+    .display {
+        font-size: clamp(2.5rem, 4.4vw, 3.6rem);
+    }
+
+    .feature-head .mark-box {
+        max-height: 44vh;
+    }
+}
+
+
+/* ------------------------------------------------------------------ *
+ * Newsletter — one field and one button on a line.
+ *
+ * The field takes the space and the button takes what it needs, so the
+ * pair reads as a single control rather than two stacked ones. Below
+ * the point where the field would be too narrow to show a typed
+ * address, they stack instead.
+ * ------------------------------------------------------------------ */
+.newsletter-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.75rem;
+    max-width: 38rem;
+}
+
+.newsletter-input {
+    flex: 1 1 16rem;
+    min-width: 0;
+    padding: 0.75rem 0.9rem;
+    border: var(--rule-strong);
+    border-radius: var(--radius-control);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font: inherit;
+    transition: background 160ms var(--ease-out-expo);
+}
+
+.newsletter-input::placeholder {
+    color: var(--color-ink-muted);
+}
+
+.newsletter-input:hover {
+    background: var(--color-paper-deep);
+}
+
+.newsletter-input:focus-visible {
+    outline: 2px solid var(--color-signal-deep);
+    outline-offset: 2px;
+    background: var(--color-paper);
+}
+
+/* Only complain once the visitor has actually typed something wrong. */
+.newsletter-input:user-invalid {
+    border-color: var(--color-signal-deep);
+}
+
+/* The offer is the reason to sign up, so it reads as copy rather than
+   as a footnote — a step above the legal line under the field, a step
+   below the heading it sits beneath. */
+.newsletter-offer {
+    margin: 0.75rem 0 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-ink-soft);
+    /* One row: the offer is a single short sentence and breaking it
+       mid-phrase reads as an afterthought. */
+    text-wrap: nowrap;
+}
+
+/* Stacked, the cell is the full screen. On a phone that is narrower
+   than the line at body size, so the line steps down one — still above
+   the 12px floor, and still one row. */
+@media (max-width: 560px) {
+    .newsletter-offer {
+        font-size: 0.875rem;
+    }
+}
+
+/* The button carries the enlarge interaction, which scales it 1.1 —
+   it needs room to grow without clipping against the field. */
+.newsletter-form .btn {
+    flex: none;
+    gap: 1.25rem;
+}

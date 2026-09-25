@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import SiteHeader from '@/Components/SiteHeader';
 import Arrow from '@/Components/Arrow';
 
 export default function Pending({ title, note }: { title: string; note: string }) {
@@ -6,14 +7,9 @@ export default function Pending({ title, note }: { title: string; note: string }
         <>
             <Head title={title} />
 
+            <SiteHeader />
+
             <div className="module hero rule-strong-bottom">
-                <div className="cell masthead">
-                    <div className="mark-field">
-                        <a href="/">
-                            <img src="/brand/myo-logo.svg" alt="MYO" width={116} height={40} />
-                        </a>
-                    </div>
-                </div>
 
                 <main className="cell statement">
                     <h1 className="display">{title.toUpperCase()}</h1>

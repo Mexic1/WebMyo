@@ -31,6 +31,7 @@ Route::get('/cum-notam', fn () => Inertia::render('CumNotam', [
 ]))->name('grading');
 Route::get('/categorie/{slug}', CategoryController::class)->name('category')->where('slug', '[a-z0-9-]+');
 Route::get('/produs/{slug}', ProductController::class)->name('product')->where('slug', '[a-z0-9-]+');
+Route::get('/cont', $pending('Contul meu', 'Autentificare, comenzile tale și datele de livrare.'))->name('account');
 Route::get('/cos', $pending('Coș', 'Coșul și finalizarea comenzii, cu plată în rate prin LeanPay și TBI Credit.'))->name('cart');
 Route::get('/help/trimite-un-produs-in-service', fn () => Inertia::render('Service', [
     'categories' => App\Data\Catalog::categories(),

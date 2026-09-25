@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import SiteHeader from '@/Components/SiteHeader';
 import Arrow from '@/Components/Arrow';
 import FilterDropdown, { type Option } from '@/Components/FilterDropdown';
 import SearchField from '@/Components/SearchField';
@@ -72,16 +73,11 @@ export default function Categorie({
         <>
             <Head title={category.label} />
 
-            <div className="module rule-bottom">
-                <div className="cell masthead">
-                    <div className="mark-field">
-                        <a href="/">
-                            <img src="/brand/myo-logo.svg" alt="MYO" width={116} height={40} />
-                        </a>
-                    </div>
-                </div>
+            <SiteHeader />
 
-                <nav className="cell span-9 crumbs" aria-label="Navigare">
+            <div className="module rule-bottom">
+
+                <nav className="cell span-12 crumbs" aria-label="Navigare">
                     <a href="/">Acasă</a>
                     <span aria-hidden="true">·</span>
                     <span aria-current="page">{category.label}</span>

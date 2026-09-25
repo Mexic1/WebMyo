@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import Arrow from '@/Components/Arrow';
 import SiteFooter, { type Category, type Company } from '@/Components/SiteFooter';
+import SiteHeader from '@/Components/SiteHeader';
 
 type Variant = {
     colour: string | null;
@@ -188,17 +189,12 @@ export default function Product({
                 ))}
             </Head>
 
+            <SiteHeader />
+
             {/* ------------------------------------------------- header */}
             <div className="module rule-bottom">
-                <div className="cell masthead">
-                    <div className="mark-field">
-                        <a href="/">
-                            <img src="/brand/myo-logo.svg" alt="MYO" width={116} height={40} />
-                        </a>
-                    </div>
-                </div>
 
-                <nav className="cell span-9 crumbs" aria-label="Navigare">
+                <nav className="cell span-12 crumbs" aria-label="Navigare">
                     <a href="/">Acasă</a>
                     <span aria-hidden="true">·</span>
                     <a href="/categorie/telefoane">Telefoane</a>

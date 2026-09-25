@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import SiteHeader from '@/Components/SiteHeader';
 import { useState } from 'react';
 import Arrow from '@/Components/Arrow';
 import GradeMark from '@/Components/GradeMark';
@@ -28,6 +29,7 @@ const screens = ['screen screen-50', 'screen screen-20', 'screen screen-05'];
 
 export default function Home({ catalog, categories, featured, units, company }: Props) {
     const [activeGrade, setActiveGrade] = useState<string | null>(null);
+    const [email, setEmail] = useState('');
     const steps = catalog.grades.length;
     const featuredStep = catalog.grades.find((g) => g.label === featured.grade)?.step ?? 1;
     // What is in stock outranks what is dear, then price decides. The
@@ -46,15 +48,11 @@ export default function Home({ catalog, categories, featured, units, company }: 
             <Head title="Telefoane și laptopuri verificate" />
 
             {/* ------------------------------------- first screen:
-                hero + category index share one viewport. The hero takes
-                whatever the category row does not. */}
+                header + hero + category index share one viewport. The
+                hero takes whatever the other two do not. */}
             <div className="screen-one">
+            <SiteHeader />
             <div className="module hero hero-split rule-strong-bottom">
-                <div className="cell masthead">
-                    <div className="mark-field">
-                        <img src="/brand/myo-logo.svg" alt="MYO" width={116} height={40} />
-                    </div>
-                </div>
 
                 <main className="cell statement">
                     <div className="statement-head">
@@ -272,6 +270,62 @@ export default function Home({ catalog, categories, featured, units, company }: 
                     </p>
                     <p className="note" style={{ marginTop: '1rem' }}>
                         Condițiile finale sunt cele afișate de furnizorul de creditare.
+                    </p>
+                </div>
+            </section>
+
+            {/* ---------------------------------------------- newsletter */}
+            <section className="module rule-strong-bottom" aria-labelledby="newsletter-title">
+                {/* Plain ground: amber is the financing accent directly
+                    above, and a second amber block would spend it.
+                    Five columns rather than four, so the offer line
+                    holds on one row down to the narrowest desktop. */}
+                <div className="cell span-5">
+                    <p className="label">Newsletter</p>
+                    <p className="section-title" id="newsletter-title" style={{ marginTop: '0.5rem' }}>
+                        Înscrie-te la newsletter
+                    </p>
+                    {/* The client's own live offer, carried over at their
+                        instruction. It is a commercial commitment: if the
+                        voucher stops, this line has to come down with it. */}
+                    <p className="newsletter-offer">
+                        Primești un voucher de 25 lei și oferte de neratat.
+                    </p>
+                </div>
+
+                <div className="cell span-7">
+                    {/* Deliberately inert, like the service and returns
+                        forms: it collects and validates, but there is no
+                        destination for it yet. */}
+                    <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
+                        <label className="sr-only" htmlFor="newsletter-email">
+                            Adresa ta de email
+                        </label>
+                        <input
+                            id="newsletter-email"
+                            name="email"
+                            className="newsletter-input"
+                            type="email"
+                            required
+                            autoComplete="email"
+                            inputMode="email"
+                            placeholder="adresa@email.ro"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <button type="submit" className="btn btn-primary">
+                            Trimite
+                            <Arrow />
+                        </button>
+                    </form>
+
+                    <p className="note" style={{ marginTop: '1rem', maxWidth: '54ch' }}>
+                        Îți trimitem ofertele noastre și noutățile din catalog. Te poți dezabona
+                        oricând, din orice email primit. Datele tale sunt tratate conform{' '}
+                        <a href="/help/politica-de-confidentialitate">
+                            politicii de confidențialitate
+                        </a>
+                        .
                     </p>
                 </div>
             </section>

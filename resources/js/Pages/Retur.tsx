@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import SiteHeader from '@/Components/SiteHeader';
 import { useState, type FormEvent } from 'react';
 import Arrow from '@/Components/Arrow';
 import SiteFooter, { type Category, type Company } from '@/Components/SiteFooter';
@@ -46,16 +47,11 @@ export default function Retur({ categories, company, courierUrl }: Props) {
         <>
             <Head title="Returnează un produs" />
 
-            <div className="module rule-bottom">
-                <div className="cell masthead">
-                    <div className="mark-field">
-                        <a href="/">
-                            <img src="/brand/myo-logo.svg" alt="MYO" width={116} height={40} />
-                        </a>
-                    </div>
-                </div>
+            <SiteHeader />
 
-                <nav className="cell span-9 crumbs" aria-label="Navigare">
+            <div className="module rule-bottom">
+
+                <nav className="cell span-12 crumbs" aria-label="Navigare">
                     <a href="/">Acasă</a>
                     <span aria-hidden="true">·</span>
                     <span aria-current="page">Returnează un produs</span>
