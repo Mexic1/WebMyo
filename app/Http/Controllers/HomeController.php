@@ -27,7 +27,7 @@ class HomeController extends Controller
 
         return Inertia::render('Home', [
             'catalog' => [
-                'unitCount' => Catalog::TOTAL_PRODUCTS,
+                'unitCount' => Catalog::totalProducts(),
                 'gradedCount' => count($units),
                 'grades' => Catalog::grades(),
             ],

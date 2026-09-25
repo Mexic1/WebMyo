@@ -40,7 +40,7 @@ export default function Home({ catalog, categories, featured, units, company }: 
                 hero + category index share one viewport. The hero takes
                 whatever the category row does not. */}
             <div className="screen-one">
-            <div className="module hero rule-strong-bottom">
+            <div className="module hero hero-split rule-strong-bottom">
                 <div className="cell masthead">
                     <div className="mark-field">
                         <img src="/brand/myo-logo.svg" alt="MYO" width={116} height={40} />
@@ -48,7 +48,7 @@ export default function Home({ catalog, categories, featured, units, company }: 
                 </div>
 
                 <main className="cell statement">
-                    <div>
+                    <div className="statement-head">
                     <h1 className="display">
                         HARDWARE
                         <br />
@@ -106,7 +106,7 @@ export default function Home({ catalog, categories, featured, units, company }: 
                     </nav>
 
                     <p className="label">Catalog</p>
-                    <p className="price tabular" style={{ margin: '0 0 1.5rem' }}>
+                    <p className="price tabular" style={{ margin: 0 }}>
                         {lei.format(catalog.unitCount)}
                         <span className="label" style={{ marginLeft: '0.5rem' }}>
                             produse

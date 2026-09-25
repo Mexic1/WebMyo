@@ -43,6 +43,73 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Debug Page Blacklist
+    |--------------------------------------------------------------------------
+    |
+    | Whoops renders $_ENV on its error page, and Laravel's Dotenv populates
+    | $_ENV with APP_KEY, DB_PASSWORD and friends verbatim. Its own default
+    | masks nothing, so any uncaught error with APP_DEBUG=true serves those
+    | credentials to whoever loaded the page.
+    |
+    | These must be LITERAL key names. Whoops matches each entry with
+    | isset($superGlobal[$key]) — there is no wildcard, so '*' silently
+    | masks nothing. Add every new secret-bearing variable here by name.
+    |
+    */
+
+    'debug_blacklist' => [
+        '_ENV' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'DB_USERNAME',
+            'DB_DATABASE',
+            'DB_HOST',
+            'REDIS_PASSWORD',
+            'REDIS_HOST',
+            'MAIL_PASSWORD',
+            'MAIL_USERNAME',
+            'MAIL_HOST',
+            'AWS_ACCESS_KEY_ID',
+            'AWS_SECRET_ACCESS_KEY',
+            'MEMCACHED_HOST',
+        ],
+        '_SERVER' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'DB_USERNAME',
+            'DB_DATABASE',
+            'DB_HOST',
+            'REDIS_PASSWORD',
+            'REDIS_HOST',
+            'MAIL_PASSWORD',
+            'MAIL_USERNAME',
+            'MAIL_HOST',
+            'AWS_ACCESS_KEY_ID',
+            'AWS_SECRET_ACCESS_KEY',
+            'MEMCACHED_HOST',
+            'HTTP_AUTHORIZATION',
+            'HTTP_COOKIE',
+            'PHP_AUTH_PW',
+        ],
+        '_COOKIE' => [
+            'XSRF-TOKEN',
+            'laravel_session',
+            'myo_session',
+        ],
+        '_POST' => [
+            'cont',
+            'banca',
+            'cui',
+            'email',
+            'telefon',
+            'adresa',
+            'password',
+            'password_confirmation',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |

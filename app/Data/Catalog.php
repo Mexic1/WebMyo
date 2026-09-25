@@ -20,7 +20,12 @@ namespace App\Data;
 class Catalog
 {
     /** Total products in the live catalog, across every category. */
-    public const TOTAL_PRODUCTS = 446;
+    /**
+     * The live myomobile.ro catalog, measured 2026-09-24. Kept as a
+     * migration target to check imports against — NOT for display, and
+     * not what this storefront holds. Use `totalProducts()` for that.
+     */
+    public const LIVE_CATALOG_SIZE = 446;
 
     /**
      * The condition ladder. Three steps, not four: only these 19 products
@@ -38,16 +43,55 @@ class Catalog
     }
 
     /** @return list<array{label: string, href: string, count: int}> */
-    public static function categories(): array
+    /**
+     * The storefront's categories, in nav order. This is the ONLY list:
+     * a category exists here or it does not exist.
+     *
+     * @return list<array{slug: string, label: string, href: string}>
+     */
+    private static function categoryList(): array
     {
         return [
-            ['label' => 'Telefoane', 'href' => '/categorie/telefoane', 'count' => 145],
-            ['label' => 'Accesorii', 'href' => '/categorie/accesorii', 'count' => 171],
-            ['label' => 'Smeg', 'href' => '/categorie/smeg', 'count' => 42],
-            ['label' => 'Tablete', 'href' => '/categorie/tablete', 'count' => 29],
-            ['label' => 'Ceasuri', 'href' => '/categorie/ceasuri', 'count' => 20],
-            ['label' => 'Laptopuri', 'href' => '/categorie/laptopuri', 'count' => 13],
+            ['slug' => 'telefoane', 'label' => 'Telefoane'],
+            ['slug' => 'accesorii', 'label' => 'Accesorii'],
+            ['slug' => 'smeg', 'label' => 'Smeg'],
+            ['slug' => 'tablete', 'label' => 'Tablete'],
+            ['slug' => 'ceasuri', 'label' => 'Ceasuri'],
+            ['slug' => 'laptopuri', 'label' => 'Laptopuri'],
         ];
+    }
+
+    /**
+     * Every category with the number of products actually held.
+     *
+     * The count is COUNTED, never written down. A hardcoded one is a
+     * promise the catalog has to keep, and it did not: the tile claimed
+     * 145 phones against 19 held and 171 accessories against 164, so a
+     * visitor following either landed on a shorter page than the number
+     * that sent them there. Adding or removing a product now moves the
+     * tile with it, and when this data layer is replaced by real tables
+     * only `productsInCategory()` changes — this keeps working.
+     *
+     * @return list<array{slug: string, label: string, href: string, count: int}>
+     */
+    public static function categories(): array
+    {
+        // Every page renders the nav, and counting means building each
+        // category's product list, so hold the answer for the request.
+        static $categories = null;
+
+        return $categories ??= array_map(fn (array $c) => [
+            'slug' => $c['slug'],
+            'label' => $c['label'],
+            'href' => '/categorie/'.$c['slug'],
+            'count' => count(self::productsInCategory($c['slug'])),
+        ], self::categoryList());
+    }
+
+    /** Everything the storefront holds, across every category. */
+    public static function totalProducts(): int
+    {
+        return array_sum(array_column(self::categories(), 'count'));
     }
 
     /** @return array{legalName: string, cui: string, address: string, phone: string, returnDays: int, warrantyMonths: int} */
@@ -750,12 +794,91 @@ class Catalog
     public static function category(string $slug): ?array
     {
         foreach (self::categories() as $category) {
-            if ($category['href'] === '/categorie/'.$slug) {
-                return $category + ['slug' => $slug];
+            if ($category['slug'] === $slug) {
+                return $category;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Human labels for the attribute keys, in the order a spec list
+     * reads best. Every label a facet or a product page shows comes
+     * from here, so one key can never carry two names.
+     *
+     * @return array<string, string>
+     */
+    public static function attributeLabels(): array
+    {
+        return [
+            'tip' => 'Tip',
+            'producator' => 'Producător',
+            'model' => 'Model',
+            'diagonala' => 'Diagonală',
+            'ecran' => 'Ecran',
+            'carcasa' => 'Carcasă',
+            'procesor' => 'Procesor',
+            'producator-procesor' => 'Producător procesor',
+            'video' => 'Chipset video',
+            'placa-video' => 'Placă video',
+            'ram' => 'RAM',
+            'memorie' => 'Stocare',
+            'autonomie' => 'Autonomie',
+            'conectivitate' => 'Conectivitate',
+            'sim' => 'SIM',
+            'tehnologie' => 'Tehnologie',
+            'sistem' => 'Sistem de operare',
+            'culoare' => 'Culoare',
+            'stare' => 'Stare',
+            'compatibilitate' => 'Compatibilitate',
+            'pret' => 'Preț',
+        ];
+    }
+
+    /**
+     * Keys that name a filter but not a fact about the product. A price
+     * band belongs in a dropdown, never in a spec table.
+     */
+    private const FACET_ONLY = ['pret'];
+
+    /**
+     * An imported row's attributes as an ordered list of label/value
+     * pairs, ready to print. Facet-only keys are left out.
+     *
+     * @return list<array{label: string, value: string}>
+     */
+    public static function specList(array $attributes): array
+    {
+        $specs = [];
+
+        foreach (self::attributeLabels() as $key => $label) {
+            $values = $attributes[$key] ?? [];
+
+            if ($values !== [] && ! in_array($key, self::FACET_ONLY, true)) {
+                $specs[] = ['label' => $label, 'value' => implode(', ', $values)];
+            }
+        }
+
+        return $specs;
+    }
+
+    /**
+     * Facet keys resolved to their shared labels. Categories declare
+     * WHICH attributes they filter on; what those attributes are
+     * CALLED is not theirs to decide.
+     *
+     * @param  list<string>  $keys
+     * @return array<string, string>
+     */
+    private static function facets(array $keys): array
+    {
+        $labels = self::attributeLabels();
+
+        return array_combine(
+            $keys,
+            array_map(fn (string $key) => $labels[$key] ?? $key, $keys),
+        );
     }
 
     /**
@@ -775,38 +898,50 @@ class Catalog
 
         if ($slug === 'telefoane') {
             return [
-                'facets' => [
-                    'producator' => 'Producător',
-                    'model' => 'Model',
-                    'memorie' => 'Memorie',
-                    'culoare' => 'Culoare',
-                    'stare' => 'Stare',
-                ],
+                'facets' => self::facets(['producator', 'model', 'memorie', 'culoare', 'stare']),
                 'sorts' => [...$byPrice, ['value' => 'rank-desc', 'label' => 'Stare, de la cea mai bună']],
             ];
         }
 
         if ($slug === 'accesorii') {
             return [
-                'facets' => [
-                    'tip' => 'Tip',
-                    'compatibilitate' => 'Compatibilitate',
-                    'pret' => 'Preț',
-                ],
+                'facets' => self::facets(['tip', 'compatibilitate', 'pret']),
                 'sorts' => [...$byPrice, ['value' => 'name-asc', 'label' => 'Nume, A–Z']],
             ];
         }
 
+        $byName = [...$byPrice, ['value' => 'name-asc', 'label' => 'Nume, A–Z']];
+
+        // Facet VALUES are counted from the products, so a dropdown
+        // populates itself and disappears when nothing carries the
+        // attribute. Which attributes appear is chosen by coverage: an
+        // attribute only a handful of rows carry filters more away than
+        // it helps, and a single-valued one is not a choice at all.
         if ($slug === 'smeg') {
-            // Declared ahead of the data. Facet VALUES are counted from
-            // the products, so these dropdowns appear the moment
-            // Appliances::all() returns rows, and stay hidden until then.
             return [
-                'facets' => [
-                    'tip' => 'Tip',
-                    'pret' => 'Preț',
-                ],
-                'sorts' => [...$byPrice, ['value' => 'name-asc', 'label' => 'Nume, A–Z']],
+                'facets' => self::facets(['tip', 'culoare', 'stare', 'pret']),
+                'sorts' => $byName,
+            ];
+        }
+
+        if ($slug === 'tablete') {
+            return [
+                'facets' => self::facets(['diagonala', 'memorie', 'ram', 'conectivitate', 'culoare', 'pret']),
+                'sorts' => $byName,
+            ];
+        }
+
+        if ($slug === 'ceasuri') {
+            return [
+                'facets' => self::facets(['carcasa', 'ecran', 'autonomie', 'culoare', 'stare', 'pret']),
+                'sorts' => $byName,
+            ];
+        }
+
+        if ($slug === 'laptopuri') {
+            return [
+                'facets' => self::facets(['diagonala', 'procesor', 'ram', 'memorie', 'placa-video', 'pret']),
+                'sorts' => $byName,
             ];
         }
 
@@ -820,6 +955,46 @@ class Catalog
      * and `meta` are what its card shows. Categories with no data yet
      * return nothing and the page says so.
      */
+
+    /**
+     * Imported rows already carry their real attributes, so a category
+     * only has to say which one reads as the card's badge and which
+     * make up its second line.
+     *
+     * @param  list<array<string, mixed>>  $rows
+     * @param  list<string>  $metaKeys
+     */
+    private static function fromImport(array $rows, string $badgeKey, array $metaKeys): array
+    {
+        return array_map(function (array $r) use ($badgeKey, $metaKeys) {
+            $meta = [];
+            foreach ($metaKeys as $key) {
+                $value = $r['attributes'][$key][0] ?? null;
+                if ($value !== null) {
+                    $meta[] = $value;
+                }
+            }
+
+            return [
+                'slug' => $r['slug'],
+                'name' => $r['name'],
+                'price' => $r['price'],
+                // Set only when the product is a range, so the card can
+                // say "de la" instead of quoting one variant's price as
+                // if it were the whole product's.
+                'priceMax' => $r['priceMax'] ?? null,
+                'wasPrice' => $r['wasPrice'] ?? null,
+                'thumb' => $r['thumb'] ?? null,
+                'href' => '/produs/'.$r['slug'],
+                'badge' => $r['attributes'][$badgeKey][0] ?? '',
+                'meta' => implode(' · ', $meta),
+                'inStock' => $r['inStock'] ?? true,
+                'rank' => 0,
+                'attributes' => $r['attributes'],
+            ];
+        }, $rows);
+    }
+
     public static function productsInCategory(string $slug): array
     {
         if ($slug === 'telefoane') {
@@ -846,21 +1021,19 @@ class Catalog
         }
 
         if ($slug === 'smeg') {
-            return array_map(fn (array $a) => [
-                'slug' => $a['slug'],
-                'name' => $a['name'],
-                'price' => $a['price'],
-                'thumb' => $a['thumb'],
-                'href' => '/produs/'.$a['slug'],
-                'badge' => $a['tip'],
-                'meta' => '',
-                'inStock' => true,
-                'rank' => 0,
-                'attributes' => [
-                    'tip' => [$a['tip']],
-                    'pret' => [$a['pret']],
-                ],
-            ], Appliances::all());
+            return self::fromImport(Appliances::all(), 'tip', []);
+        }
+
+        if ($slug === 'tablete') {
+            return self::fromImport(Devices::all('tablete'), 'diagonala', ['ram', 'memorie']);
+        }
+
+        if ($slug === 'ceasuri') {
+            return self::fromImport(Devices::all('ceasuri'), 'carcasa', ['autonomie']);
+        }
+
+        if ($slug === 'laptopuri') {
+            return self::fromImport(Devices::all('laptopuri'), 'procesor', ['ram', 'memorie']);
         }
 
         if ($slug === 'accesorii') {

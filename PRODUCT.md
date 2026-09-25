@@ -42,7 +42,7 @@ This position is currently asserted but not delivered: condition exists only as 
 - Company: MYOMOBILE TRADING SRL, CUI 46108435, registered Str. Mărășești 11C, Buziaș, Timiș county.
 - Romanian market, Romanian consumer law. Site must carry ANPC / SAL links, GDPR compliance, and the legally required warranty terms.
 - Languages: **Romanian and English**, confirmed. Romanian is the primary market; the current site is `ro_RO` only.
-- Current catalog size: **446 products** in the live product sitemap (measured 2026-09-24).
+- Current catalog size: **446 products** in the live product sitemap (measured 2026-09-24). Note the sitemap and the category pages count WooCommerce **variation** rows as products; distinct purchasable products are fewer. Measured via the Store API 2026-09-25: Tablete is **20**, not the 29 the category page implies, and Ceasuri is **19**, not 20. Any count quoted to a customer should be of parent products.
 - Current storefront categories: `telefoane`, `laptopuri`, `tablete`, `ceasuri`, `smeg`, `accesorii`. Note `ceasuri` (watches) rather than `wearables`, and that SMEG kitchen appliances are genuinely part of the catalog.
 - Offers currently advertised: free shipping over a threshold, installments via LeanPay and TBI Credit, trade-in, 14-day return, stated 12-month warranty on refurbished units.
 - A separate B2B property exists at `licitatii.myomobile.ro` (live). **Out of scope** for this rebuild.
@@ -72,7 +72,11 @@ Any data migration must therefore be treated as importing from an untrusted sour
 - Trade-in and service/RMA workflows as tracked processes. (The current site's `trimite-un-produs-in-service` and `returneaza-un-produs` pages exist; whether they are reproduced as static content is an open question.)
 - The B2B auctions property at `licitatii.myomobile.ro`.
 
-**Condition grading is the central data problem.** On the live site, condition is not a product attribute. Of 446 products only **19** carry a condition grade, all of them iPhones: `-bun` ×6, `-excelent` ×7, `-ca-nou` ×6. The remaining 427 carry none. WooCommerce variations are `pa_culoare` (colour) and `pa_memoria-interna` (storage) only. Condition lives inside the product title string, punctuation errors included (`"Apple iPhone 16 Pro Max , Excelent"`). The rebuild must model condition as a real field with a defined, closed grade vocabulary.
+**Condition grading is the central data problem.** Of 446 products only **19** carry a refurbished grade, all of them iPhones: `-bun` ×6, `-excelent` ×7, `-ca-nou` ×6. That grade lives inside the product title string, punctuation errors included (`"Apple iPhone 16 Pro Max , Excelent"`), and is not modelled anywhere. The rebuild must model it as a real field with a defined, closed vocabulary.
+
+**Corrected 2026-09-25: a `pa_stare` attribute does exist — but it is a different axis.** An earlier entry here said condition is not a product attribute at all. That was wrong. `pa_stare` is published on 37 products across SMEG, tablets, watches and laptops, and its vocabulary is exactly two values: **`Sigilat`** (sealed) and **`Openbox - Produs Desigilat`**. That is packaging state, not wear. It must not be conflated with the Bun → Excelent → Ca nou ladder: a sealed unit and a *Ca nou* unit are different claims, and merging them would misdescribe stock. The rebuild carries both, separately.
+
+**The WooCommerce Store API is open and is the migration route.** `/wp-json/wc/store/v1/products` serves names, prices, sale prices, stock, categories, images and real attributes as JSON, 100 per page, with no authentication. Verified 2026-09-25 by importing SMEG, Tablete, Ceasuri and Laptopuri through it. This supersedes scraping: it is faster, politer, and it carries the published attributes that a rendered page does not. Note it is also readable by anyone, which is worth raising with the client as a competitive-intelligence exposure, not a security one.
 
 **The vocabulary is three steps: Bun → Excelent → Ca nou.** Corrected 2026-09-24. An earlier count in this file claimed four grades including "Nou"; that was wrong — `-nou` only matched as a substring of `-ca-nou`. No "Nou" or "Sigilat" grade exists in the catalog. Three steps is confirmed by slug and by each product's own variation data, but whether three is the vocabulary the client *intends* is still unconfirmed.
 

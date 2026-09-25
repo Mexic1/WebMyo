@@ -20,8 +20,8 @@ $pending = fn (string $title, string $note) => fn () => Inertia::render('Pending
 
 Route::get('/magazin', $pending('Catalog', 'Catalogul complet, cu filtrare după notă de stare.'))->name('shop');
 Route::get('/cum-notam', $pending('Cum notăm aparatele', 'Procesul de testare și scara de stare, explicate pas cu pas.'))->name('grading');
-Route::get('/categorie/{slug}', CategoryController::class)->name('category');
-Route::get('/produs/{slug}', ProductController::class)->name('product');
+Route::get('/categorie/{slug}', CategoryController::class)->name('category')->where('slug', '[a-z0-9-]+');
+Route::get('/produs/{slug}', ProductController::class)->name('product')->where('slug', '[a-z0-9-]+');
 Route::get('/cos', $pending('Coș', 'Coșul și finalizarea comenzii, cu plată în rate prin LeanPay și TBI Credit.'))->name('cart');
 Route::get('/help/trimite-un-produs-in-service', fn () => Inertia::render('Service', [
     'categories' => App\Data\Catalog::categories(),
@@ -50,4 +50,5 @@ Route::get('/help/politica-de-confidentialitate', fn () => Inertia::render('Conf
     'dpoPhone' => '0758 808 911',
 ]))->name('privacy');
 
-Route::get('/help/{slug}', $pending('Informații', 'Termeni, confidențialitate, retur și service.'))->name('help');
+// Catch-all: keep it LAST, or a specific /help/x below is shadowed.
+Route::get('/help/{slug}', $pending('Informații', 'Termeni, confidențialitate, retur și service.'))->name('help')->where('slug', '[a-z0-9-]+');

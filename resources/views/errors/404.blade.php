@@ -17,7 +17,7 @@
         </div>
         <main class="cell statement">
             <h1 class="display">PAGINA<br>NU EXISTĂ.</h1>
-            <p class="sub" style="margin-top:2rem">Adresa cerută nu duce nicăieri. Catalogul te așteaptă.</p>
+            <p class="sub error-lede">Adresa cerută nu duce nicăieri. Catalogul te așteaptă.</p>
             <div class="actions">
                 <a class="btn btn-primary" href="/">Înapoi la început<svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true" focusable="false"><path d="M0 5h16" stroke="currentColor" stroke-width="1.5"/><path d="M12.5 1 17 5l-4.5 4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></a>
             </div>

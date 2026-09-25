@@ -10,6 +10,9 @@ type Product = {
     slug: string;
     name: string;
     price: number | null;
+    /** Set only when the product is a range, so the card reads "de la". */
+    priceMax?: number | null;
+    wasPrice?: number | null;
     thumb: string | null;
     href: string;
     badge: string;
@@ -260,11 +263,13 @@ export default function Categorie({
                                         />
                                     </span>
                                 )}
-                                <span className="unit-grade">{p.badge}</span>
+                                {p.badge && <span className="unit-grade">{p.badge}</span>}
                                 <span className="unit-name">{p.name}</span>
                                 {p.meta && <span className="label">{p.meta}</span>}
                                 <span className="unit-price tabular">
-                                    {p.price !== null ? `${lei.format(p.price)} lei` : '—'}
+                                    {p.price !== null
+                                        ? `${p.priceMax ? 'de la ' : ''}${lei.format(p.price)} lei`
+                                        : '—'}
                                 </span>
                                 {!p.inStock && <span className="note">Stoc epuizat</span>}
                             </a>
